@@ -1,0 +1,3 @@
+[submodule "foray"]
+	path = foray
+	url = https://github.com/Vulkemp/foray
