@@ -30,7 +30,7 @@ function (foray_example)
     if (ENABLE_GBUFFER_BENCH)
         target_compile_definitions(${PROJECT_NAME} ENABLE_GBUFFER_BENCH)
     endif()
-
+    target_compile_options(${PROJECT_NAME} PUBLIC "-DCWD_OVERRIDE=\"${CMAKE_CURRENT_LIST_DIR}\"")
 
     # Link foray lib
     target_link_libraries(
@@ -50,8 +50,8 @@ function (foray_example)
     # Configure include directories
     target_include_directories(
     	${PROJECT_NAME}
-    	PUBLIC "../foray/src"
-    	PUBLIC "../foray/third_party"
+    	PUBLIC "${CMAKE_SOURCE_DIR}/foray/src"
+    	PUBLIC "${CMAKE_SOURCE_DIR}/foray/third_party"
     	PUBLIC ${Vulkan_INCLUDE_DIRS}
     )
 endfunction()

@@ -4,20 +4,19 @@
 #include <osi/foray_env.hpp>
 #include <vector>
 
-namespace foray::minimal_raytracer {
+namespace foray::blank {
 
-    class MinimalRaytracerApp : public base::DefaultAppBase
+    class BlankApp : public base::DefaultAppBase
     {
-
     };
 
     int example(std::vector<std::string>& args)
     {
         foray::osi::OverrideCurrentWorkingDirectory(CWD_OVERRIDE);
-        MinimalRaytracerApp app;
+        BlankApp app;
         return app.Run();
     }
-}  // namespace foray::minimal_raytracer
+}  // namespace foray::blank
 
 int main(int argv, char** args)
 {
@@ -26,5 +25,5 @@ int main(int argv, char** args)
     {
         argvec[i] = args[i];
     }
-    return foray::minimal_raytracer::example(argvec);
+    return foray::blank::example(argvec);
 }
