@@ -31,6 +31,7 @@ function (foray_example)
         target_compile_definitions(${PROJECT_NAME} ENABLE_GBUFFER_BENCH)
     endif()
     target_compile_options(${PROJECT_NAME} PUBLIC "-DCWD_OVERRIDE=\"${CMAKE_CURRENT_LIST_DIR}\"")
+    target_compile_options(${PROJECT_NAME} PUBLIC "-DDATA_DIR=\"${CMAKE_SOURCE_DIR}/data\"")
 
     # Link foray lib
     target_link_libraries(

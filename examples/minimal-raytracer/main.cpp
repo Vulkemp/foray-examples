@@ -1,4 +1,4 @@
-#include <base/foray_defaultappbase.hpp>
+#include "foray_minimalrtapp.hpp"
 #include <foray_basics.hpp>
 #include <foray_logger.hpp>
 #include <osi/foray_env.hpp>
@@ -6,10 +6,6 @@
 
 namespace foray::minimal_raytracer {
 
-    class MinimalRaytracerApp : public base::DefaultAppBase
-    {
-
-    };
 
     int example(std::vector<std::string>& args)
     {
