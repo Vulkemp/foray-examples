@@ -16,14 +16,17 @@ namespace foray::minimal_raytracer {
     void MinimalRaytracingStage::CreateRaytraycingPipeline()
     {
         mRaygen.LoadFromSource(mContext, RAYGEN_FILE);
+        mClosestHit.LoadFromSource(mContext, CLOSESTHIT_FILE);
 
         mPipeline.GetRaygenSbt().SetGroup(0, &mRaygen);
+        mPipeline.GetHitSbt().SetGroup(0, &mClosestHit, nullptr, nullptr);
         RaytracingStage::CreateRaytraycingPipeline();
     }
     void MinimalRaytracingStage::OnShadersRecompiled()
     {
         foray::core::ShaderManager& shaderCompiler = foray::core::ShaderManager::Instance();
-        bool                        rebuild        = shaderCompiler.HasShaderBeenRecompiled(RAYGEN_FILE);
+
+        bool rebuild = shaderCompiler.HasShaderBeenRecompiled(RAYGEN_FILE) | shaderCompiler.HasShaderBeenRecompiled(CLOSESTHIT_FILE);
         if(rebuild)
         {
             ReloadShaders();
@@ -32,6 +35,7 @@ namespace foray::minimal_raytracer {
     void MinimalRaytracingStage::DestroyShaders()
     {
         mRaygen.Destroy();
+        mClosestHit.Destroy();
     }
 
     void MinimalRaytracerApp::Init()
@@ -64,6 +68,7 @@ namespace foray::minimal_raytracer {
 
     void MinimalRaytracerApp::RecordCommandBuffer(foray::base::FrameRenderInfo& renderInfo)
     {
+        mScene->Update(renderInfo);
         mRtStage.RecordFrame(renderInfo);
         mSwapCopyStage.RecordFrame(renderInfo);
     }

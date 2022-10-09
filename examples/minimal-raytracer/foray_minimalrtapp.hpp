@@ -7,6 +7,7 @@
 namespace foray::minimal_raytracer {
 
     inline const std::string RAYGEN_FILE = "shaders/raygen.rgen";
+    inline const std::string CLOSESTHIT_FILE = "shaders/closesthit.rchit";
     inline const std::string SCENE_FILE = DATA_DIR "/gltf/minimal/minimal.gltf";
 
     class MinimalRaytracingStage : public stages::RaytracingStage
@@ -19,6 +20,7 @@ namespace foray::minimal_raytracer {
 
       protected:
         core::ShaderModule mRaygen;
+        core::ShaderModule mClosestHit;
     };
 
     class MinimalRaytracerApp : public base::DefaultAppBase
