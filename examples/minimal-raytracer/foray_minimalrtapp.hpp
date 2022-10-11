@@ -8,6 +8,7 @@ namespace foray::minimal_raytracer {
 
     inline const std::string RAYGEN_FILE = "shaders/raygen.rgen";
     inline const std::string CLOSESTHIT_FILE = "shaders/closesthit.rchit";
+    inline const std::string MISS_FILE = "shaders/miss.rmiss";
     inline const std::string SCENE_FILE = DATA_DIR "/gltf/minimal/minimal.gltf";
 
     class MinimalRaytracingStage : public stages::RaytracingStage
@@ -21,6 +22,7 @@ namespace foray::minimal_raytracer {
       protected:
         core::ShaderModule mRaygen;
         core::ShaderModule mClosestHit;
+        core::ShaderModule mMiss;
     };
 
     class MinimalRaytracerApp : public base::DefaultAppBase
@@ -28,6 +30,7 @@ namespace foray::minimal_raytracer {
       protected:
         virtual void Init() override;
         virtual void OnEvent(const foray::Event* event) override;
+        virtual void OnShadersRecompiled() override;
 
         virtual void RecordCommandBuffer(foray::base::FrameRenderInfo& renderInfo) override;
         virtual void OnResized(VkExtent2D size) override;

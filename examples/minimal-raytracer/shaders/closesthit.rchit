@@ -7,9 +7,9 @@
 // Include structs and bindings
 
 #include "../../../foray/src/shaders/rt_common/bindpoints.glsl" // Bindpoints (= descriptor set layout)
-// #include "../../../foray/src/shaders/common/materialbuffer.glsl" // Material buffer for material information and texture array
-// #include "../../../foray/src/shaders/rt_common/geometrymetabuffer.glsl" // GeometryMeta information
-// #include "../../../foray/src/shaders/rt_common/geobuffers.glsl" // Vertex and index buffer aswell as accessor methods
+#include "../../../foray/src/shaders/common/materialbuffer.glsl" // Material buffer for material information and texture array
+#include "../../../foray/src/shaders/rt_common/geometrymetabuffer.glsl" // GeometryMeta information
+#include "../../../foray/src/shaders/rt_common/geobuffers.glsl" // Vertex and index buffer aswell as accessor methods
 // #include "../../../foray/src/shaders/common/normaltbn.glsl" // Normal calculation in tangent space
 
 // Declare hitpayloads
@@ -21,36 +21,33 @@ hitAttributeEXT vec2 attribs; // Barycentric coordinates
 
 void main()
 {
-    ReturnPayload.HitColor = vec3(1.0, 0.0, 0.0);
-    return;
-
-	// // Calculate barycentric coords from hitAttribute values
-	// const vec3 barycentricCoords = vec3(1.0f - attribs.x - attribs.y, attribs.x, attribs.y);
+	// Calculate barycentric coords from hitAttribute values
+	const vec3 barycentricCoords = vec3(1.0f - attribs.x - attribs.y, attribs.x, attribs.y);
 	
-	// // Get geometry meta info
-	// GeometryMeta geometa = GetGeometryMeta(uint(gl_InstanceCustomIndexEXT), uint(gl_GeometryIndexEXT));
+	// Get geometry meta info
+	GeometryMeta geometa = GetGeometryMeta(uint(gl_InstanceCustomIndexEXT), uint(gl_GeometryIndexEXT));
 
-	// // get primitive indices
-	// const uvec3 indices = GetIndices(geometa, uint(gl_PrimitiveID));
+	// get primitive indices
+	const uvec3 indices = GetIndices(geometa, uint(gl_PrimitiveID));
 
-	// // get primitive vertices
-	// Vertex v0, v1, v2;
-	// GetVertices(indices, v0, v1, v2);
+	// get primitive vertices
+	Vertex v0, v1, v2;
+	GetVertices(indices, v0, v1, v2);
 
-	// // calculate uv
-    // const vec2 uv = v0.Uv * barycentricCoords.x + v1.Uv * barycentricCoords.y + v2.Uv * barycentricCoords.z;
+	// calculate uv
+    const vec2 uv = v0.Uv * barycentricCoords.x + v1.Uv * barycentricCoords.y + v2.Uv * barycentricCoords.z;
 
-	// // get material 
-	// MaterialBufferObject material = GetMaterialOrFallback(geometa.MaterialIndex);
-	// MaterialProbe probe = ProbeMaterial(material, uv);
+	// get material 
+	MaterialBufferObject material = GetMaterialOrFallback(geometa.MaterialIndex);
+	MaterialProbe probe = ProbeMaterial(material, uv);
 
-    // ReturnPayload.HitColor = probe.BaseColor.rgb;
+    ReturnPayload.HitColor = probe.BaseColor.rgb;
 
-	// // Calculate model and worldspace positions
-	// const vec3 posModelSpace = v0.Pos * barycentricCoords.x + v1.Pos * barycentricCoords.y + v2.Pos * barycentricCoords.z;
-	// const vec3 posWorldSpace = vec3(gl_ObjectToWorldEXT * vec4(posModelSpace, 1.f));
+	// Calculate model and worldspace positions
+	const vec3 posModelSpace = v0.Pos * barycentricCoords.x + v1.Pos * barycentricCoords.y + v2.Pos * barycentricCoords.z;
+	const vec3 posWorldSpace = vec3(gl_ObjectToWorldEXT * vec4(posModelSpace, 1.f));
     
-    // ReturnPayload.Distance = length(posWorldSpace - gl_WorldRayOriginEXT);
+    ReturnPayload.Distance = length(posWorldSpace - gl_WorldRayOriginEXT);
 
 	// // Interpolate normal of hitpoint
 	// const vec3 normalModelSpace = v0.Normal * barycentricCoords.x + v1.Normal * barycentricCoords.y + v2.Normal * barycentricCoords.z;

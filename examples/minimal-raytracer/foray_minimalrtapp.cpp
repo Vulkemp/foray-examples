@@ -17,16 +17,18 @@ namespace foray::minimal_raytracer {
     {
         mRaygen.LoadFromSource(mContext, RAYGEN_FILE);
         mClosestHit.LoadFromSource(mContext, CLOSESTHIT_FILE);
+        mMiss.LoadFromSource(mContext, MISS_FILE);
 
         mPipeline.GetRaygenSbt().SetGroup(0, &mRaygen);
         mPipeline.GetHitSbt().SetGroup(0, &mClosestHit, nullptr, nullptr);
+        mPipeline.GetMissSbt().SetGroup(0, &mMiss);
         RaytracingStage::CreateRaytraycingPipeline();
     }
     void MinimalRaytracingStage::OnShadersRecompiled()
     {
         foray::core::ShaderManager& shaderCompiler = foray::core::ShaderManager::Instance();
 
-        bool rebuild = shaderCompiler.HasShaderBeenRecompiled(RAYGEN_FILE) | shaderCompiler.HasShaderBeenRecompiled(CLOSESTHIT_FILE);
+        bool rebuild = shaderCompiler.HasShaderBeenRecompiled(RAYGEN_FILE) | shaderCompiler.HasShaderBeenRecompiled(CLOSESTHIT_FILE) | shaderCompiler.HasShaderBeenRecompiled(MISS_FILE);
         if(rebuild)
         {
             ReloadShaders();
@@ -36,6 +38,7 @@ namespace foray::minimal_raytracer {
     {
         mRaygen.Destroy();
         mClosestHit.Destroy();
+        mMiss.Destroy();
     }
 
     void MinimalRaytracerApp::Init()
@@ -77,6 +80,11 @@ namespace foray::minimal_raytracer {
     {
         mRtStage.OnResized(size);
         mSwapCopyStage.OnResized(size, mRtStage.GetColorAttachmentByName(stages::RaytracingStage::RaytracingRenderTargetName));
+    }
+
+    void MinimalRaytracerApp::OnShadersRecompiled()
+    {
+        mRtStage.OnShadersRecompiled();
     }
 
     void MinimalRaytracerApp::Destroy()
