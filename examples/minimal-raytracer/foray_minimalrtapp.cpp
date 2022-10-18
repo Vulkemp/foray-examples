@@ -71,9 +71,13 @@ namespace foray::minimal_raytracer {
 
     void MinimalRaytracerApp::RecordCommandBuffer(foray::base::FrameRenderInfo& renderInfo)
     {
-        mScene->Update(renderInfo);
-        mRtStage.RecordFrame(renderInfo);
-        mSwapCopyStage.RecordFrame(renderInfo);
+        core::DeviceCommandBuffer& cmdBuffer = renderInfo.GetPrimaryCommandBuffer();
+        cmdBuffer.Begin();
+        mScene->Update(renderInfo, cmdBuffer);
+        mRtStage.RecordFrame(cmdBuffer, renderInfo);
+        mSwapCopyStage.RecordFrame(cmdBuffer, renderInfo);
+        renderInfo.GetInFlightFrame()->PrepareSwapchainImageForPresent();
+        cmdBuffer.Submit(mContext.QueueGraphics);
     }
 
     void MinimalRaytracerApp::OnResized(VkExtent2D size)
