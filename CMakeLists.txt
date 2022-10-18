@@ -9,7 +9,7 @@ set(CMAKE_CUDA_STANDARD 20)
 include("foray/cmakescripts/compilerconfig.cmake")
 
 # Run Locate SDL2 script
-set(SDL2_HINT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/hsk_rt_rpf/third_party")
+set(SDL2_HINT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/foray/third_party")
 include("foray/cmakescripts/locatesdl2.cmake")
 
 # Add cmake script dir to cmake's ""Path""
