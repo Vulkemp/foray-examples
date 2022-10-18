@@ -53,6 +53,6 @@ function (foray_example)
     	${PROJECT_NAME}
     	PUBLIC "${CMAKE_SOURCE_DIR}/foray/src"
     	PUBLIC "${CMAKE_SOURCE_DIR}/foray/third_party"
-    	PUBLIC ${Vulkan_INCLUDE_DIRS}
+    	PUBLIC ${Vulkan_INCLUDE_DIR}
     )
 endfunction()
