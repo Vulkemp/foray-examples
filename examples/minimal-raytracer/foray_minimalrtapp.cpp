@@ -58,10 +58,7 @@ namespace foray::minimal_raytracer {
         mScene->GetComponent<foray::scene::CameraManager>()->RefreshCameraList();
 
         mRtStage.Init(&mContext, mScene.get());
-        mSwapCopyStage.Init(&mContext, mRtStage.GetColorAttachmentByName(stages::RaytracingStage::RaytracingRenderTargetName),
-                            foray::stages::ImageToSwapchainStage::PostCopy{.AccessFlags      = (VkAccessFlagBits::VK_ACCESS_SHADER_WRITE_BIT),
-                                                                           .ImageLayout      = (VkImageLayout::VK_IMAGE_LAYOUT_GENERAL),
-                                                                           .QueueFamilyIndex = (mContext.QueueGraphics)});
+        mSwapCopyStage.Init(&mContext, mRtStage.GetColorAttachmentByName(stages::RaytracingStage::RaytracingRenderTargetName));
     }
 
     void MinimalRaytracerApp::OnEvent(const foray::Event* event)
@@ -73,10 +70,11 @@ namespace foray::minimal_raytracer {
     {
         core::DeviceCommandBuffer& cmdBuffer = renderInfo.GetPrimaryCommandBuffer();
         cmdBuffer.Begin();
+        renderInfo.GetInFlightFrame()->ClearSwapchainImage(cmdBuffer, renderInfo.GetImageLayoutCache());
         mScene->Update(renderInfo, cmdBuffer);
         mRtStage.RecordFrame(cmdBuffer, renderInfo);
         mSwapCopyStage.RecordFrame(cmdBuffer, renderInfo);
-        renderInfo.GetInFlightFrame()->PrepareSwapchainImageForPresent();
+        renderInfo.GetInFlightFrame()->PrepareSwapchainImageForPresent(cmdBuffer, renderInfo.GetImageLayoutCache());
         cmdBuffer.Submit(mContext.QueueGraphics);
     }
 
