@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project("foray-intel-sponza")
-
-enable_language(CXX)
-set(CMAKE_CUDA_STANDARD 20)
+project("foray-examples")
 
 # Include Compiler Config (sets c++ 20 and compiler flags)
 include("foray/cmakescripts/compilerconfig.cmake")
