@@ -30,10 +30,8 @@ namespace foray::minimal_raytracer {
       protected:
         virtual void Init() override;
         virtual void OnEvent(const foray::Event* event) override;
-        virtual void OnShadersRecompiled() override;
 
         virtual void RecordCommandBuffer(foray::base::FrameRenderInfo& renderInfo) override;
-        virtual void OnResized(VkExtent2D size) override;
         virtual void Destroy() override;
 
         MinimalRaytracingStage        mRtStage;

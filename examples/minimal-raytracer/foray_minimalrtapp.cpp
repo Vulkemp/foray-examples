@@ -59,6 +59,9 @@ namespace foray::minimal_raytracer {
 
         mRtStage.Init(&mContext, mScene.get());
         mSwapCopyStage.Init(&mContext, mRtStage.GetColorAttachmentByName(stages::RaytracingStage::RaytracingRenderTargetName));
+
+        RegisterRenderStage(&mRtStage);
+        RegisterRenderStage(&mSwapCopyStage);
     }
 
     void MinimalRaytracerApp::OnEvent(const foray::Event* event)
@@ -76,17 +79,7 @@ namespace foray::minimal_raytracer {
         mSwapCopyStage.RecordFrame(cmdBuffer, renderInfo);
         renderInfo.GetInFlightFrame()->PrepareSwapchainImageForPresent(cmdBuffer, renderInfo.GetImageLayoutCache());
         cmdBuffer.Submit(mContext.QueueGraphics);
-    }
-
-    void MinimalRaytracerApp::OnResized(VkExtent2D size)
-    {
-        mRtStage.OnResized(size);
-        mSwapCopyStage.OnResized(size, mRtStage.GetColorAttachmentByName(stages::RaytracingStage::RaytracingRenderTargetName));
-    }
-
-    void MinimalRaytracerApp::OnShadersRecompiled()
-    {
-        mRtStage.OnShadersRecompiled();
+        // logger()->info("Frame #{}", renderInfo.GetFrameNumber());
     }
 
     void MinimalRaytracerApp::Destroy()
