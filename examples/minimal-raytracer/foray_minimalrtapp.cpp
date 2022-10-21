@@ -7,7 +7,7 @@
 #include <scene/globalcomponents/foray_tlasmanager.hpp>
 
 namespace foray::minimal_raytracer {
-    void MinimalRaytracingStage::Init(const foray::core::VkContext* context, foray::scene::Scene* scene)
+    void MinimalRaytracingStage::Init(foray::core::Context* context, foray::scene::Scene* scene)
     {
         mContext = context;
         mScene   = scene;
@@ -41,7 +41,7 @@ namespace foray::minimal_raytracer {
         mMiss.Destroy();
     }
 
-    void MinimalRaytracerApp::Init()
+    void MinimalRaytracerApp::ApiInit()
     {
         mScene = std::make_unique<foray::scene::Scene>(&mContext);
 
@@ -64,12 +64,12 @@ namespace foray::minimal_raytracer {
         RegisterRenderStage(&mSwapCopyStage);
     }
 
-    void MinimalRaytracerApp::OnEvent(const foray::Event* event)
+    void MinimalRaytracerApp::ApiOnEvent(const foray::Event* event)
     {
         mScene->InvokeOnEvent(event);
     }
 
-    void MinimalRaytracerApp::RecordCommandBuffer(foray::base::FrameRenderInfo& renderInfo)
+    void MinimalRaytracerApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)
     {
         core::DeviceCommandBuffer& cmdBuffer = renderInfo.GetPrimaryCommandBuffer();
         cmdBuffer.Begin();
@@ -78,13 +78,12 @@ namespace foray::minimal_raytracer {
         mRtStage.RecordFrame(cmdBuffer, renderInfo);
         mSwapCopyStage.RecordFrame(cmdBuffer, renderInfo);
         renderInfo.GetInFlightFrame()->PrepareSwapchainImageForPresent(cmdBuffer, renderInfo.GetImageLayoutCache());
-        cmdBuffer.Submit(mContext.QueueGraphics);
+        cmdBuffer.Submit();
         // logger()->info("Frame #{}", renderInfo.GetFrameNumber());
     }
 
-    void MinimalRaytracerApp::Destroy()
+    void MinimalRaytracerApp::ApiDestroy()
     {
-        vkDeviceWaitIdle(mContext.Device);
         mRtStage.Destroy();
         mSwapCopyStage.Destroy();
         mScene = nullptr;

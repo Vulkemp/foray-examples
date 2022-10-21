@@ -14,7 +14,7 @@ namespace foray::minimal_raytracer {
     class MinimalRaytracingStage : public stages::RaytracingStage
     {
       public:
-        virtual void Init(const foray::core::VkContext* context, foray::scene::Scene* scene);
+        virtual void Init(foray::core::Context* context, foray::scene::Scene* scene);
         virtual void CreateRaytraycingPipeline() override;
         virtual void OnShadersRecompiled() override;
         virtual void DestroyShaders() override;
@@ -28,11 +28,11 @@ namespace foray::minimal_raytracer {
     class MinimalRaytracerApp : public base::DefaultAppBase
     {
       protected:
-        virtual void Init() override;
-        virtual void OnEvent(const foray::Event* event) override;
+        virtual void ApiInit() override;
+        virtual void ApiOnEvent(const foray::Event* event) override;
 
-        virtual void RecordCommandBuffer(foray::base::FrameRenderInfo& renderInfo) override;
-        virtual void Destroy() override;
+        virtual void ApiRender(foray::base::FrameRenderInfo& renderInfo) override;
+        virtual void ApiDestroy() override;
 
         MinimalRaytracingStage        mRtStage;
         stages::ImageToSwapchainStage mSwapCopyStage;
