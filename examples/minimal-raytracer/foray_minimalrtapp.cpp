@@ -87,6 +87,5 @@ namespace foray::minimal_raytracer {
         mRtStage.Destroy();
         mSwapCopyStage.Destroy();
         mScene = nullptr;
-        DefaultAppBase::Destroy();
     }
 }  // namespace foray::minimal_raytracer
