@@ -1,12 +1,9 @@
-#include <base/foray_defaultappbase.hpp>
-#include <foray_basics.hpp>
-#include <foray_logger.hpp>
-#include <osi/foray_env.hpp>
+#include <foray_api.hpp>
 #include <vector>
 
-namespace foray::blank {
+namespace blankapp {
 
-    class BlankApp : public base::DefaultAppBase
+    class BlankApp : public foray::base::DefaultAppBase
     {
     };
 
@@ -25,5 +22,5 @@ int main(int argv, char** args)
     {
         argvec[i] = args[i];
     }
-    return foray::blank::example(argvec);
+    return blankapp::example(argvec);
 }

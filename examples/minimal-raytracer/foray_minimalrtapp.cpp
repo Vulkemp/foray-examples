@@ -1,12 +1,7 @@
 #include "foray_minimalrtapp.hpp"
-#include <core/foray_shadermanager.hpp>
 #include <gltf/foray_modelconverter.hpp>
-#include <scene/components/foray_camera.hpp>
-#include <scene/components/foray_freecameracontroller.hpp>
-#include <scene/globalcomponents/foray_cameramanager.hpp>
-#include <scene/globalcomponents/foray_tlasmanager.hpp>
 
-namespace foray::minimal_raytracer {
+namespace minimal_raytracer {
     void MinimalRaytracingStage::Init(foray::core::Context* context, foray::scene::Scene* scene)
     {
         mContext = context;
@@ -43,35 +38,32 @@ namespace foray::minimal_raytracer {
 
     void MinimalRaytracerApp::ApiInit()
     {
+        mWindowSwapchain.GetWindow().DisplayMode(foray::osi::EDisplayMode::WindowedResizable);
+
         mScene = std::make_unique<foray::scene::Scene>(&mContext);
 
-        gltf::ModelConverter converter(mScene.get());
+        foray::gltf::ModelConverter converter(mScene.get());
 
         converter.LoadGltfModel(SCENE_FILE);
 
-        mScene->MakeComponent<foray::scene::TlasManager>(&mContext)->CreateOrUpdate();
-
-        auto cameraNode = mScene->MakeNode();
-
-        cameraNode->MakeComponent<foray::scene::Camera>()->InitDefault();
-        cameraNode->MakeComponent<foray::scene::FreeCameraController>();
-        mScene->GetComponent<foray::scene::CameraManager>()->RefreshCameraList();
+        mScene->UpdateTlasManager();
+        mScene->UseDefaultCamera();
 
         mRtStage.Init(&mContext, mScene.get());
-        mSwapCopyStage.Init(&mContext, mRtStage.GetColorAttachmentByName(stages::RaytracingStage::RaytracingRenderTargetName));
+        mSwapCopyStage.Init(&mContext, mRtStage.GetColorAttachmentByName(foray::stages::RaytracingStage::RaytracingRenderTargetName));
 
         RegisterRenderStage(&mRtStage);
         RegisterRenderStage(&mSwapCopyStage);
     }
 
-    void MinimalRaytracerApp::ApiOnEvent(const foray::Event* event)
+    void MinimalRaytracerApp::ApiOnEvent(const foray::osi::Event* event)
     {
         mScene->InvokeOnEvent(event);
     }
 
     void MinimalRaytracerApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)
     {
-        core::DeviceCommandBuffer& cmdBuffer = renderInfo.GetPrimaryCommandBuffer();
+        foray::core::DeviceCommandBuffer& cmdBuffer = renderInfo.GetPrimaryCommandBuffer();
         cmdBuffer.Begin();
         renderInfo.GetInFlightFrame()->ClearSwapchainImage(cmdBuffer, renderInfo.GetImageLayoutCache());
         mScene->Update(renderInfo, cmdBuffer);

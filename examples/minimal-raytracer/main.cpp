@@ -4,7 +4,7 @@
 #include <osi/foray_env.hpp>
 #include <vector>
 
-namespace foray::minimal_raytracer {
+namespace minimal_raytracer {
 
 
     int example(std::vector<std::string>& args)
@@ -13,7 +13,7 @@ namespace foray::minimal_raytracer {
         MinimalRaytracerApp app;
         return app.Run();
     }
-}  // namespace foray::minimal_raytracer
+}  // namespace minimal_raytracer
 
 int main(int argv, char** args)
 {
@@ -22,5 +22,5 @@ int main(int argv, char** args)
     {
         argvec[i] = args[i];
     }
-    return foray::minimal_raytracer::example(argvec);
+    return minimal_raytracer::example(argvec);
 }
