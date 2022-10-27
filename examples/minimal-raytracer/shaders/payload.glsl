@@ -1,10 +1,12 @@
 #ifndef PAYLOAD_GLSL
 #define PAYLOAD_GLSL
 
+// @brief Raytracing Hit payload. This struct is passed as input variable and return variable to hit / miss shaders.
+// It is initialized in the shader calling traceRayEXT and returned back to that call after the hit / miss shader 
+// and subsequent calls have been resolved
 struct HitPayload
 {
-    vec3 HitColor;
-    float Distance;
+    vec3 HitColor; // Simple color information
 };
 
 #ifdef HITPAYLOAD_OUT

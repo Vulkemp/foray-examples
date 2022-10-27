@@ -21,11 +21,13 @@ hitAttributeEXT vec2 attribs; // Barycentric coordinates
 
 void main()
 {
-	// Calculate barycentric coords from hitAttribute values
-	const vec3 barycentricCoords = vec3(1.0f - attribs.x - attribs.y, attribs.x, attribs.y);
+	// The closesthit shader is invoked with hit information on the geometry intersect closest to the ray origin
 	
+	// STEP #1 Get meta information on the intersected geometry (material) and the vertex information
+
 	// Get geometry meta info
 	GeometryMeta geometa = GetGeometryMeta(uint(gl_InstanceCustomIndexEXT), uint(gl_GeometryIndexEXT));
+	MaterialBufferObject material = GetMaterialOrFallback(geometa.MaterialIndex);
 
 	// get primitive indices
 	const uvec3 indices = GetIndices(geometa, uint(gl_PrimitiveID));
@@ -34,30 +36,17 @@ void main()
 	Vertex v0, v1, v2;
 	GetVertices(indices, v0, v1, v2);
 
+	// STEP #2 Calculate UV coordinates and probe the material
+
+	// Calculate barycentric coords from hitAttribute values
+	const vec3 barycentricCoords = vec3(1.0f - attribs.x - attribs.y, attribs.x, attribs.y);
+
 	// calculate uv
     const vec2 uv = v0.Uv * barycentricCoords.x + v1.Uv * barycentricCoords.y + v2.Uv * barycentricCoords.z;
 
-	// get material 
-	MaterialBufferObject material = GetMaterialOrFallback(geometa.MaterialIndex);
+	// Get material information at the current hitpoint
 	MaterialProbe probe = ProbeMaterial(material, uv);
 
+	// Simply write out the base color as the hit color
     ReturnPayload.HitColor = probe.BaseColor.rgb;
-
-	// Calculate model and worldspace positions
-	const vec3 posModelSpace = v0.Pos * barycentricCoords.x + v1.Pos * barycentricCoords.y + v2.Pos * barycentricCoords.z;
-	const vec3 posWorldSpace = vec3(gl_ObjectToWorldEXT * vec4(posModelSpace, 1.f));
-    
-    ReturnPayload.Distance = length(posWorldSpace - gl_WorldRayOriginEXT);
-
-	// // Interpolate normal of hitpoint
-	// const vec3 normalModelSpace = v0.Normal * barycentricCoords.x + v1.Normal * barycentricCoords.y + v2.Normal * barycentricCoords.z;
-	// const vec3 tangentModelSpace = v0.Tangent * barycentricCoords.x + v1.Tangent * barycentricCoords.y + v2.Tangent * barycentricCoords.z;
-	// const mat3 modelMatTransposedInverse = transpose(mat3(mat4x3(gl_WorldToObjectEXT)));
-	// vec3 normalWorldSpace = normalize(modelMatTransposedInverse * normalModelSpace);
-	// const vec3 tangentWorldSpace = normalize(tangentModelSpace);
-	
-	// const mat3 TBN = CalculateTBN(normalWorldSpace, tangentWorldSpace);
-
-	// normalWorldSpace = ApplyNormalMap(TBN, probe);
-
 }

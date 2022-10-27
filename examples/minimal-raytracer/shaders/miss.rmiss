@@ -4,10 +4,11 @@
 
 // Declare hitpayloads
 
-#define HITPAYLOAD_IN
+#define HITPAYLOAD_IN // This defines the payload as coming from a parent shader invocation (input variable and return variable of this shader)
 #include "payload.glsl"
 
 void main()
 {
+    // The hit shader is invoked, when no geometry has been hit. We could render a skybox in here
     ReturnPayload.HitColor = vec3(0.0, 0.0, 0.0);
 }
