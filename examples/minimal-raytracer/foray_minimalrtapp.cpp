@@ -50,7 +50,7 @@ namespace minimal_raytracer {
         mScene->UseDefaultCamera();
 
         mRtStage.Init(&mContext, mScene.get());
-        mSwapCopyStage.Init(&mContext, mRtStage.GetColorAttachmentByName(foray::stages::RaytracingStage::RaytracingRenderTargetName));
+        mSwapCopyStage.Init(&mContext, mRtStage.GetImageOutput(foray::stages::RaytracingStage::RaytracingRenderTargetName));
 
         RegisterRenderStage(&mRtStage);
         RegisterRenderStage(&mSwapCopyStage);
