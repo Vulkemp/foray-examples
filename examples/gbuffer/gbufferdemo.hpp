@@ -4,7 +4,7 @@
 
 namespace gbuffer {
 
-    inline const std::string SCENE_FILE = "/mnt/bigssd/Projects/Master/hsk_rt_rpf_sponza_sample/glTF-Sample-Models/2.0/Sponza/glTF/Sponza.gltf";
+    inline const std::string SCENE_FILE = DATA_DIR "/gltf/testbox/testbox.gltf";
 
     inline const std::string GBUFFER_ABOUT = "The GBuffer stage is a rasterized render pass which collects in depth meta information about the scene."
     "Similar techniques are traditionally used for rasterized deferred rendering, but have found great use in raytraced rendering too.";
@@ -13,10 +13,10 @@ namespace gbuffer {
       "Contains worldspace hitpoint positions in a rgba32f image. Can be used to launch rays from a first intersect calculated by rasterization, and as an input for denoising.",
       "Contains worldpace hitpoint normals in a rgba32f image. Can be used to launch rays from a first intersect calculated by rasterization, and as an input for denoising.",
       "Contains material base color in a rgba32f image. Can be used to calculate lighting information and as an input for denoising.",
-      "Contains pixel flow information in screenspace. For each pixel, defines a projection from current UV coordinates to previous frame UV coordinates. Used for temporal reprojection.",
-      "Contains material indices. Can be used as an input for denoisers and for deferred lighting calculation",
-      "Contains mesh instance indices. Can be used as an input for denoisers and object identification",
-      "Contains default vulkan depth format"
+      "Contains screenspace pixel flow information in a rg32f image. For each pixel, defines a projection from current UV coordinates to previous frame UV coordinates. Used for temporal reprojection.",
+      "Contains material indices in a r32i image. Can be used as an input for denoisers and for deferred lighting calculation.",
+      "Contains mesh instance indices in a r32u image. Can be used as an input for denoisers and object identification.",
+      "Contains default vulkan depth format (can be read from shaders as r32f)."
     };
 
     class GBufferDemoApp : public foray::base::DefaultAppBase
@@ -34,14 +34,21 @@ namespace gbuffer {
 
         void HandleImGui();
 
+        /// @brief The GBuffer stage renders scene information using rasterization
         foray::stages::GBufferStage          mGBufferStage;
+        /// @brief The comparer stage allows side by side view of multi-type input images
         foray::stages::ComparerStage         mComparerStage;
+        /// @brief The ImGui stage renders the GUI
         foray::stages::ImguiStage            mImguiStage;
+        /// @brief The swap copy stage blits the output image onto the swapchain
         foray::stages::ImageToSwapchainStage mSwapCopyStage;
 
+        /// @brief The currently viewed GBuffer outputs (left and right side)
         foray::stages::GBufferStage::EOutput mView[2];
+        /// @brief Dirty markerfor the GBuffer output views (left and right side)
         bool                                 mViewChanged[2] = {false, false};
 
+        /// @brief Scene
         std::unique_ptr<foray::scene::Scene> mScene;
     };
 }  // namespace gbuffer

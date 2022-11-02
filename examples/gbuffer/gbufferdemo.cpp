@@ -23,8 +23,8 @@ namespace gbuffer {
 
             mComparerStage.Init(&mContext);
             SetView(0, foray::stages::GBufferStage::EOutput::Albedo);
-            SetView(1, foray::stages::GBufferStage::EOutput::Normal);
-            mComparerStage.SetMixValue(0.8);
+            SetView(1, foray::stages::GBufferStage::EOutput::Position);
+            mComparerStage.SetMixValue(0.75);
 
             mImguiStage.AddWindowDraw([this]() { this->HandleImGui(); });
             mImguiStage.Init(&mContext, mComparerStage.GetImageOutput(mComparerStage.OutputName));
@@ -194,7 +194,7 @@ namespace gbuffer {
 
     void GBufferDemoApp::ApiDestroy()
     {
-        mScene = nullptr;
+        mScene = nullptr; // The unique ptr will call destructor upon assigning a nullptr value
         mGBufferStage.Destroy();
         mComparerStage.Destroy();
         mImguiStage.Destroy();
