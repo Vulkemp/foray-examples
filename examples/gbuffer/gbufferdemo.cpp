@@ -101,7 +101,7 @@ namespace gbuffer {
                 input.ChannelCount = 2; // UV X,Y
                 break;
             case foray::stages::GBufferStage::EOutput::MaterialIdx: {
-                foray::scene::MaterialBuffer* matBuffer = mScene->GetComponent<foray::scene::MaterialBuffer>();
+                foray::scene::gcomp::MaterialBuffer* matBuffer = mScene->GetComponent<foray::scene::gcomp::MaterialBuffer>();
                 input.ChannelCount                      = 1;
                 float scale = 1 / std::max<float>(1.f, (float)matBuffer->GetVector().size());
                 input.Scale                             = glm::vec4(scale, 0.f, 0.f, 1.f);
@@ -109,7 +109,7 @@ namespace gbuffer {
                 break;
             }
             case foray::stages::GBufferStage::EOutput::MeshInstanceIdx: {
-                foray::scene::DrawDirector* drawDirector = mScene->GetComponent<foray::scene::DrawDirector>();
+                foray::scene::gcomp::DrawDirector* drawDirector = mScene->GetComponent<foray::scene::gcomp::DrawDirector>();
                 input.ChannelCount                       = 1;
                 float scale = 1 / std::max<float>(1.f, (float)drawDirector->GetTotalCount());
                 input.Scale                              = glm::vec4(scale, 0.f, 0.f, 1.f);

@@ -1,5 +1,12 @@
 Demos showcasing the capabilities of the Framework for Open Ray Tracing Prototyping *foray*
 
+# Setup
+
+```
+git clone --recursive https://github.com/Vulkemp/foray-examples
+```
+Also clones the submodule `foray` (required).
+
 # Examples
 ## [GBuffer](./examples/gbuffer/)
 ![GBufferImg](./images/GBuffer.png)
@@ -9,3 +16,9 @@ Demos showcasing the capabilities of the Framework for Open Ray Tracing Prototyp
     * ImGui Stage (Module for [DearImgui](https://github.com/ocornut/imgui) integration)
 ## [Minimal Ray tracer](./examples/minimal-raytracer/)
 * Demonstrates a minimalist raytracing setup
+
+# Tested Build Environments
+* Linux G++
+* Linux Clang
+* Windows MSVC
+* Windows Clang
