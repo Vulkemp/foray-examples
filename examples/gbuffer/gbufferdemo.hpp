@@ -16,6 +16,7 @@ namespace gbuffer {
       "Contains screenspace pixel flow information in a rg32f image. For each pixel, defines a projection from current UV coordinates to previous frame UV coordinates. Used for temporal reprojection.",
       "Contains material indices in a r32i image. Can be used as an input for denoisers and for deferred lighting calculation.",
       "Contains mesh instance indices in a r32u image. Can be used as an input for denoisers and object identification.",
+      "Contains processed depth information in a rg32f image. First channel is linear depth, second channel is a depth gradient. Useful for denoising.",
       "Contains default vulkan depth format (can be read from shaders as r32f)."
     };
 

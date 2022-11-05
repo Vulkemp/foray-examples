@@ -17,7 +17,7 @@ namespace gbuffer {
             mScene->UseDefaultCamera();
         }
 
-        { // Init and register render stages
+        {  // Init and register render stages
 
             mGBufferStage.Init(&mContext, mScene.get());
 
@@ -88,32 +88,35 @@ namespace gbuffer {
         mView[index]        = view;
         mViewChanged[index] = false;
 
-        foray::stages::ComparerStage::Input input{.Image        = mGBufferStage.GetImageEOutput(view),
-                                                               .ChannelCount = 4,
-                                                               .Scale        = glm::vec4(1.f),
-                                                               .Aspect       = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT,
-                                                               .Type         = foray::stages::ComparerStage::EInputType::Float};
+        foray::stages::ComparerStage::InputInfo input{.Image        = mGBufferStage.GetImageEOutput(view),
+                                                      .ChannelCount = 4,
+                                                      .Scale        = glm::vec4(1.f),
+                                                      .Aspect       = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT,
+                                                      .Type         = foray::stages::ComparerStage::EInputType::Float};
 
         // Set channel count, type and scale properly
         switch(view)
         {
             case foray::stages::GBufferStage::EOutput::Motion:
-                input.ChannelCount = 2; // UV X,Y
+                input.ChannelCount = 2;  // UV X,Y
+                break;
+            case foray::stages::GBufferStage::EOutput::LinearZ:
+                input.ChannelCount = 2;  // UV X,Y
                 break;
             case foray::stages::GBufferStage::EOutput::MaterialIdx: {
                 foray::scene::gcomp::MaterialBuffer* matBuffer = mScene->GetComponent<foray::scene::gcomp::MaterialBuffer>();
-                input.ChannelCount                      = 1;
-                float scale = 1 / std::max<float>(1.f, (float)matBuffer->GetVector().size());
-                input.Scale                             = glm::vec4(scale, 0.f, 0.f, 1.f);
-                input.Type                              = foray::stages::ComparerStage::EInputType::Int;
+                input.ChannelCount                             = 1;
+                float scale                                    = 1 / std::max<float>(1.f, (float)matBuffer->GetVector().size());
+                input.Scale                                    = glm::vec4(scale, 0.f, 0.f, 1.f);
+                input.Type                                     = foray::stages::ComparerStage::EInputType::Int;
                 break;
             }
             case foray::stages::GBufferStage::EOutput::MeshInstanceIdx: {
                 foray::scene::gcomp::DrawDirector* drawDirector = mScene->GetComponent<foray::scene::gcomp::DrawDirector>();
-                input.ChannelCount                       = 1;
-                float scale = 1 / std::max<float>(1.f, (float)drawDirector->GetTotalCount());
-                input.Scale                              = glm::vec4(scale, 0.f, 0.f, 1.f);
-                input.Type                               = foray::stages::ComparerStage::EInputType::Uint;
+                input.ChannelCount                              = 1;
+                float scale                                     = 1 / std::max<float>(1.f, (float)drawDirector->GetTotalCount());
+                input.Scale                                     = glm::vec4(scale, 0.f, 0.f, 1.f);
+                input.Type                                      = foray::stages::ComparerStage::EInputType::Uint;
                 break;
             }
             case foray::stages::GBufferStage::EOutput::Depth:
@@ -132,7 +135,7 @@ namespace gbuffer {
         using namespace foray::stages;
         const GBufferStage::EOutput OUTPUTS[] = {GBufferStage::EOutput::Position, GBufferStage::EOutput::Normal,      GBufferStage::EOutput::Albedo,
                                                  GBufferStage::EOutput::Motion,   GBufferStage::EOutput::MaterialIdx, GBufferStage::EOutput::MeshInstanceIdx,
-                                                 GBufferStage::EOutput::Depth};
+                                                 GBufferStage::EOutput::LinearZ,  GBufferStage::EOutput::Depth};
 
         if(ImGui::Begin("Controls", nullptr))
         {
@@ -194,7 +197,7 @@ namespace gbuffer {
 
     void GBufferDemoApp::ApiDestroy()
     {
-        mScene = nullptr; // The unique ptr will call destructor upon assigning a nullptr value
+        mScene = nullptr;  // The unique ptr will call destructor upon assigning a nullptr value
         mGBufferStage.Destroy();
         mComparerStage.Destroy();
         mImguiStage.Destroy();
