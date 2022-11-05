@@ -2,13 +2,7 @@
 #include <gltf/foray_modelconverter.hpp>
 
 namespace minimal_raytracer {
-    void MinimalRaytracingStage::Init(foray::core::Context* context, foray::scene::Scene* scene)
-    {
-        mContext = context;
-        mScene   = scene;
-        RaytracingStage::Init();
-    }
-    void MinimalRaytracingStage::CreateRaytraycingPipeline()
+    void MinimalRaytracingStage::CreateRtPipeline()
     {
         mRaygen.LoadFromSource(mContext, RAYGEN_FILE);
         mClosestHit.LoadFromSource(mContext, CLOSESTHIT_FILE);
@@ -17,20 +11,12 @@ namespace minimal_raytracer {
         mPipeline.GetRaygenSbt().SetGroup(0, &mRaygen);
         mPipeline.GetHitSbt().SetGroup(0, &mClosestHit, nullptr, nullptr);
         mPipeline.GetMissSbt().SetGroup(0, &mMiss);
-        RaytracingStage::CreateRaytraycingPipeline();
+        mPipeline.Build(mContext, mPipelineLayout);
     }
-    void MinimalRaytracingStage::OnShadersRecompiled()
-    {
-        foray::core::ShaderManager& shaderCompiler = foray::core::ShaderManager::Instance();
 
-        bool rebuild = shaderCompiler.HasShaderBeenRecompiled(RAYGEN_FILE) | shaderCompiler.HasShaderBeenRecompiled(CLOSESTHIT_FILE) | shaderCompiler.HasShaderBeenRecompiled(MISS_FILE);
-        if(rebuild)
-        {
-            ReloadShaders();
-        }
-    }
-    void MinimalRaytracingStage::DestroyShaders()
+    void MinimalRaytracingStage::DestroyRtPipeline()
     {
+        mPipeline.Destroy();
         mRaygen.Destroy();
         mClosestHit.Destroy();
         mMiss.Destroy();
@@ -50,7 +36,7 @@ namespace minimal_raytracer {
         mScene->UseDefaultCamera();
 
         mRtStage.Init(&mContext, mScene.get());
-        mSwapCopyStage.Init(&mContext, mRtStage.GetImageOutput(foray::stages::RaytracingStage::RaytracingRenderTargetName));
+        mSwapCopyStage.Init(&mContext, mRtStage.GetRtOutput());
 
         RegisterRenderStage(&mRtStage);
         RegisterRenderStage(&mSwapCopyStage);
@@ -59,6 +45,11 @@ namespace minimal_raytracer {
     void MinimalRaytracerApp::ApiOnEvent(const foray::osi::Event* event)
     {
         mScene->InvokeOnEvent(event);
+    }
+    
+    void MinimalRaytracerApp::ApiOnResized(VkExtent2D size)
+    {
+        mScene->InvokeOnResized(size);
     }
 
     void MinimalRaytracerApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)

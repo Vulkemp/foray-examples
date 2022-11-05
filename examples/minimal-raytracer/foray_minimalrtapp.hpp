@@ -9,13 +9,11 @@ namespace minimal_raytracer {
     inline const std::string MISS_FILE = "shaders/miss.rmiss";
     inline const std::string SCENE_FILE = DATA_DIR "/gltf/testbox/testbox.gltf";
 
-    class MinimalRaytracingStage : public foray::stages::RaytracingStage
+    class MinimalRaytracingStage : public foray::stages::ExtRaytracingStage
     {
       public:
-        virtual void Init(foray::core::Context* context, foray::scene::Scene* scene);
-        virtual void CreateRaytraycingPipeline() override;
-        virtual void OnShadersRecompiled() override;
-        virtual void DestroyShaders() override;
+        virtual void CreateRtPipeline() override;
+        virtual void DestroyRtPipeline() override;
 
       protected:
         foray::core::ShaderModule mRaygen;
@@ -28,6 +26,8 @@ namespace minimal_raytracer {
       protected:
         virtual void ApiInit() override;
         virtual void ApiOnEvent(const foray::osi::Event* event) override;
+
+        virtual void ApiOnResized(VkExtent2D size) override;
 
         virtual void ApiRender(foray::base::FrameRenderInfo& renderInfo) override;
         virtual void ApiDestroy() override;
