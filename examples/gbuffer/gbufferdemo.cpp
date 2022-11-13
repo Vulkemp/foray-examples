@@ -1,8 +1,8 @@
 #include "gbufferdemo.hpp"
 #include <imgui/imgui.h>
 #include <nameof/nameof.hpp>
-#include <scene/globalcomponents/foray_drawdirector.hpp>
-#include <scene/globalcomponents/foray_materialbuffer.hpp>
+#include <scene/globalcomponents/foray_drawmanager.hpp>
+#include <scene/globalcomponents/foray_materialmanager.hpp>
 
 namespace gbuffer {
     void GBufferDemoApp::ApiInit()
@@ -104,11 +104,11 @@ namespace gbuffer {
                 input.ChannelCount = 2;  // UV X,Y
                 break;
             case foray::stages::GBufferStage::EOutput::MaterialIdx: {
-                foray::scene::gcomp::MaterialBuffer* matBuffer = mScene->GetComponent<foray::scene::gcomp::MaterialBuffer>();
-                input.ChannelCount                             = 1;
-                float scale                                    = 1 / std::max<float>(1.f, (float)matBuffer->GetVector().size());
-                input.Scale                                    = glm::vec4(scale, 0.f, 0.f, 1.f);
-                input.Type                                     = foray::stages::ComparerStage::EInputType::Int;
+                foray::scene::gcomp::MaterialManager* matBuffer = mScene->GetComponent<foray::scene::gcomp::MaterialManager>();
+                input.ChannelCount                              = 1;
+                float scale                                     = 1 / std::max<float>(1.f, (float)matBuffer->GetVector().size());
+                input.Scale                                     = glm::vec4(scale, 0.f, 0.f, 1.f);
+                input.Type                                      = foray::stages::ComparerStage::EInputType::Int;
                 break;
             }
             case foray::stages::GBufferStage::EOutput::MeshInstanceIdx: {
@@ -145,7 +145,11 @@ namespace gbuffer {
                 ImGui::TextWrapped("%s", GBUFFER_ABOUT.c_str());
                 ImGui::Unindent(3.f);
             }
-            ImGui::DragFloat("Mix", &mComparerStage.GetMixValue(), 0.01f, 0.f, 1.f, nullptr, ImGuiSliderFlags_AlwaysClamp);
+            float mix = mComparerStage.GetMixValue();
+            if(ImGui::DragFloat("Mix", &mix, 0.01f, 0.f, 1.f, nullptr, ImGuiSliderFlags_AlwaysClamp))
+            {
+                mComparerStage.SetMixValue(mix);
+            }
 
 
             const char* Sides[] = {"Left", "Right"};
