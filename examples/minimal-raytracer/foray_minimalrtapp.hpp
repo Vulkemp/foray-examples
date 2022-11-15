@@ -7,7 +7,7 @@ namespace minimal_raytracer {
     inline const std::string RAYGEN_FILE = "shaders/raygen.rgen";
     inline const std::string CLOSESTHIT_FILE = "shaders/closesthit.rchit";
     inline const std::string MISS_FILE = "shaders/miss.rmiss";
-    inline const std::string SCENE_FILE = DATA_DIR "/gltf/testbox/testbox.gltf";
+    inline const std::string SCENE_FILE = DATA_DIR "/gltf/testbox/scene.gltf";
 
     class MinimalRaytracingStage : public foray::stages::ExtRaytracingStage
     {

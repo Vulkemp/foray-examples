@@ -4,7 +4,7 @@
 
 namespace gbuffer {
 
-    inline const std::string SCENE_FILE = DATA_DIR "/gltf/testbox/testbox.gltf";
+    inline const std::string SCENE_FILE = DATA_DIR "/gltf/outdoorbox/scene.gltf";
 
     inline const std::string GBUFFER_ABOUT = "The GBuffer stage is a rasterized render pass which collects in depth meta information about the scene."
     "Similar techniques are traditionally used for rasterized deferred rendering, but have found great use in raytraced rendering too.";

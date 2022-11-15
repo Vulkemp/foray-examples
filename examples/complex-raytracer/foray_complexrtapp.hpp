@@ -10,7 +10,7 @@ namespace complex_raytracer {
     inline const std::string CLOSESTHIT_FILE = "shaders/default/closesthit.rchit";
     inline const std::string MISS_FILE       = "shaders/default/miss.rmiss";
     inline const std::string VISI_MISS_FILE       = "shaders/visibilitytest/miss.rmiss";
-    inline const std::string SCENE_FILE      = DATA_DIR "/gltf/testbox2/testbox.gltf";
+    inline const std::string SCENE_FILE      = DATA_DIR "/gltf/testbox/scene.gltf";
 
     class ComplexRaytracingStage : public foray::stages::ExtRaytracingStage
     {
@@ -29,8 +29,6 @@ namespace complex_raytracer {
         foray::core::ShaderModule mVisiMiss;
 
         foray::scene::gcomp::LightManager* mLightManager;
-
-
     };
 
     class ComplexRaytracerApp : public foray::base::DefaultAppBase

@@ -53,11 +53,22 @@ vec3 CollectDirectLight(in vec3 pos, in vec3 normal, in MaterialBufferObject mat
         SimplifiedLight light = SimplifiedLights.Array[ReturnPayload.Seed % SimplifiedLights.Count];
 
         vec3 origin = pos;
-        vec3 dir = light.PosOrDir - origin;
+        vec3 dir = vec3(0);
+        float len = 0;
+        if (light.Type == SimplifiedLightType_Directional)
+        {
+            dir = normalize(-light.PosOrDir);
+            len = INFINITY;
+        }
+        else
+        {
+            dir = light.PosOrDir - origin;
+            len = length(dir);
+            dir = normalize(dir);
+        }
         float nDotL = dot(dir, normal);
         CorrectOrigin(origin, normal, nDotL);
-        float len = length(dir);
-        dir = normalize(dir);
+        
 
         if (nDotL > 0) // If light source is not behind the surface ...
         {
@@ -85,9 +96,14 @@ vec3 CollectDirectLight(in vec3 pos, in vec3 normal, in MaterialBufferObject mat
                 hit.wIn = dir;
                 hit.wHalf = normalize(hit.wOut + hit.wIn);
 
-                vec3 reflection = EvaluateMaterial(hit, material, probe); // Calculate light reflected
+                vec3 reflection = (nDotL * ReturnPayload.Attenuation * light.Intensity * light.Color * EvaluateMaterial(hit, material, probe)) / (4 * PI); // Calculate light reflected
 
-                directLightSum += (nDotL * ReturnPayload.Attenuation * light.Intensity * light.Color * reflection) / (len * len * 4 * PI);
+                if (light.Type == SimplifiedLightType_Point)
+                {
+                    reflection /= (len * len);
+                }
+
+                directLightSum += reflection;
                 directLightWeight += 1;
             }
         }
