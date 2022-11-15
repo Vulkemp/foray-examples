@@ -4,7 +4,7 @@
 #include <util/foray_noisesource.hpp>
 #include <scene/globalcomponents/foray_lightmanager.hpp>
 
-namespace pbr_raytracer {
+namespace complex_raytracer {
 
     inline const std::string RAYGEN_FILE     = "shaders/raygen.rgen";
     inline const std::string CLOSESTHIT_FILE = "shaders/default/closesthit.rchit";
@@ -12,7 +12,7 @@ namespace pbr_raytracer {
     inline const std::string VISI_MISS_FILE       = "shaders/visibilitytest/miss.rmiss";
     inline const std::string SCENE_FILE      = DATA_DIR "/gltf/testbox2/testbox.gltf";
 
-    class PbrRaytracingStage : public foray::stages::ExtRaytracingStage
+    class ComplexRaytracingStage : public foray::stages::ExtRaytracingStage
     {
       public:
         virtual void Init(foray::core::Context* context, foray::scene::Scene* scene);
@@ -33,7 +33,7 @@ namespace pbr_raytracer {
 
     };
 
-    class PbrRaytracerApp : public foray::base::DefaultAppBase
+    class ComplexRaytracerApp : public foray::base::DefaultAppBase
     {
       protected:
         virtual void ApiBeforeInit() override;
@@ -45,9 +45,9 @@ namespace pbr_raytracer {
         virtual void ApiRender(foray::base::FrameRenderInfo& renderInfo) override;
         virtual void ApiDestroy() override;
 
-        PbrRaytracingStage                   mRtStage;
+        ComplexRaytracingStage                   mRtStage;
         foray::stages::ImageToSwapchainStage mSwapCopyStage;
         std::unique_ptr<foray::scene::Scene> mScene;
     };
 
-}  // namespace pbr_raytracer
+}  // namespace complex_raytracer

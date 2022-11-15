@@ -14,8 +14,7 @@
 
 #define HITPAYLOAD_OUT
 #include "../../../foray/src/shaders/rt_common/payload.glsl" // Bind the payload struct outgoing
-
-const float INFINITY = 1 / 0; // Yes this is the official way to get infinity in GLSL
+#include "../../../foray/src/shaders/shading/constants.glsl"
 
 void main() 
 {

@@ -1,19 +1,19 @@
-#include "foray_pbr_rtapp.hpp"
+#include "foray_complexrtapp.hpp"
 #include <foray_basics.hpp>
 #include <foray_logger.hpp>
 #include <osi/foray_env.hpp>
 #include <vector>
 
-namespace pbr_raytracer {
+namespace complex_raytracer {
 
 
     int example(std::vector<std::string>& args)
     {
         foray::osi::OverrideCurrentWorkingDirectory(CWD_OVERRIDE);
-        PbrRaytracerApp app;
+        ComplexRaytracerApp app;
         return app.Run();
     }
-}  // namespace pbr_raytracer
+}  // namespace complex_raytracer
 
 int main(int argv, char** args)
 {
@@ -22,5 +22,5 @@ int main(int argv, char** args)
     {
         argvec[i] = args[i];
     }
-    return pbr_raytracer::example(argvec);
+    return complex_raytracer::example(argvec);
 }

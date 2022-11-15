@@ -16,6 +16,12 @@ Also clones the submodule `foray` (required).
     * ImGui Stage (Module for [DearImgui](https://github.com/ocornut/imgui) integration)
 ## [Minimal Ray tracer](./examples/minimal-raytracer/)
 * Demonstrates a minimalist raytracing setup
+## [Complex Ray tracer](./examples/complex-raytracer/)
+![ComplexRtImage](./images/complexrt.png)
+* Good use of the material system (glTF)
+* Demonstrates use of punctual lights
+* Showcases multiple hit groups (light transport rays vs. visibility rays)
+
 
 # Tested Build Environments
 * Linux G++

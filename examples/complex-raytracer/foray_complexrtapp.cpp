@@ -1,15 +1,15 @@
-#include "foray_pbr_rtapp.hpp"
+#include "foray_complexrtapp.hpp"
 #include <gltf/foray_modelconverter.hpp>
 #include <scene/globalcomponents/foray_lightmanager.hpp>
 
-namespace pbr_raytracer {
-    void PbrRaytracingStage::Init(foray::core::Context* context, foray::scene::Scene* scene)
+namespace complex_raytracer {
+    void ComplexRaytracingStage::Init(foray::core::Context* context, foray::scene::Scene* scene)
     {
         mLightManager = scene->GetComponent<foray::scene::gcomp::LightManager>();
         foray::stages::ExtRaytracingStage::Init(context, scene);
     }
 
-    void PbrRaytracingStage::CreateRtPipeline()
+    void ComplexRaytracingStage::CreateRtPipeline()
     {
         mRaygen.LoadFromSource(mContext, RAYGEN_FILE);
         mClosestHit.LoadFromSource(mContext, CLOSESTHIT_FILE);
@@ -25,7 +25,7 @@ namespace pbr_raytracer {
         mPipeline.Build(mContext, mPipelineLayout);
     }
 
-    void PbrRaytracingStage::DestroyRtPipeline()
+    void ComplexRaytracingStage::DestroyRtPipeline()
     {
         mPipeline.Destroy();
         mRaygen.Destroy();
@@ -34,7 +34,7 @@ namespace pbr_raytracer {
         mVisiMiss.Destroy();
     }
 
-    void PbrRaytracingStage::CreateOrUpdateDescriptors()
+    void ComplexRaytracingStage::CreateOrUpdateDescriptors()
     {
         const uint32_t bindpoint_lights = 11;
 
@@ -43,11 +43,11 @@ namespace pbr_raytracer {
         foray::stages::ExtRaytracingStage::CreateOrUpdateDescriptors();
     }
 
-    void PbrRaytracerApp::ApiBeforeInit()
+    void ComplexRaytracerApp::ApiBeforeInit()
     {
         mInstance.SetEnableDebugReport(false);
     }
-    void PbrRaytracerApp::ApiInit()
+    void ComplexRaytracerApp::ApiInit()
     {
         mWindowSwapchain.GetWindow().DisplayMode(foray::osi::EDisplayMode::WindowedResizable);
 
@@ -70,17 +70,17 @@ namespace pbr_raytracer {
         RegisterRenderStage(&mSwapCopyStage);
     }
 
-    void PbrRaytracerApp::ApiOnEvent(const foray::osi::Event* event)
+    void ComplexRaytracerApp::ApiOnEvent(const foray::osi::Event* event)
     {
         mScene->InvokeOnEvent(event);
     }
 
-    void PbrRaytracerApp::ApiOnResized(VkExtent2D size)
+    void ComplexRaytracerApp::ApiOnResized(VkExtent2D size)
     {
         mScene->InvokeOnResized(size);
     }
 
-    void PbrRaytracerApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)
+    void ComplexRaytracerApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)
     {
         foray::core::DeviceCommandBuffer& cmdBuffer = renderInfo.GetPrimaryCommandBuffer();
         cmdBuffer.Begin();
@@ -92,10 +92,10 @@ namespace pbr_raytracer {
         cmdBuffer.Submit();
     }
 
-    void PbrRaytracerApp::ApiDestroy()
+    void ComplexRaytracerApp::ApiDestroy()
     {
         mRtStage.Destroy();
         mSwapCopyStage.Destroy();
         mScene = nullptr;
     }
-}  // namespace pbr_raytracer
+}  // namespace complex_raytracer
