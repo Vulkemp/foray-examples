@@ -22,7 +22,6 @@ Also clones the submodule `foray` (required).
 * Demonstrates use of punctual lights
 * Showcases multiple hit groups (light transport rays vs. visibility rays)
 
-
 # Tested Build Environments
 * Linux G++
 * Linux Clang
