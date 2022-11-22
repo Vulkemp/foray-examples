@@ -7,14 +7,16 @@
 
 namespace complex_raytracer {
 
-    inline const std::string RAYGEN_FILE     = "shaders/raygen.rgen";
-    inline const std::string CLOSESTHIT_FILE = "shaders/default/closesthit.rchit";
-    inline const std::string MISS_FILE       = "shaders/default/miss.rmiss";
-    inline const std::string VISI_MISS_FILE  = "shaders/visibilitytest/miss.rmiss";
+    inline const std::string RAYGEN_FILE      = "shaders/raygen.rgen";
+    inline const std::string CLOSESTHIT_FILE  = "shaders/default/closesthit.rchit";
+    inline const std::string ANYHIT_FILE      = "shaders/default/anyhit.rahit";
+    inline const std::string MISS_FILE        = "shaders/default/miss.rmiss";
+    inline const std::string VISI_MISS_FILE   = "shaders/visibilitytest/miss.rmiss";
+    inline const std::string VISI_ANYHIT_FILE = "shaders/visibilitytest/anyhit.rahit";
 
-    inline const std::string SCENE_FILE          = DATA_DIR "/gltf/testbox/scene.gltf";
+    inline const std::string SCENE_FILE = DATA_DIR "/gltf/testbox/scene.gltf";
     /// @brief If true, will invert the viewport when blitting. Will invert the scene while loading to -Y up if false
-    inline constexpr bool    INVERT_BLIT_INSTEAD = true;
+    inline constexpr bool INVERT_BLIT_INSTEAD = true;
 
     class ComplexRaytracingStage : public foray::stages::ExtRaytracingStage
     {
@@ -29,8 +31,10 @@ namespace complex_raytracer {
 
         foray::core::ShaderModule mRaygen;
         foray::core::ShaderModule mClosestHit;
+        foray::core::ShaderModule mAnyHit;
         foray::core::ShaderModule mMiss;
         foray::core::ShaderModule mVisiMiss;
+        foray::core::ShaderModule mVisiAnyHit;
 
         foray::scene::gcomp::LightManager* mLightManager;
     };
