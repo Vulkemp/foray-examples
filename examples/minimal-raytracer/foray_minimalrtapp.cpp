@@ -33,10 +33,11 @@ namespace minimal_raytracer {
         converter.LoadGltfModel(SCENE_FILE);
 
         mScene->UpdateTlasManager();
-        mScene->UseDefaultCamera();
+        mScene->UseDefaultCamera(true);
 
         mRtStage.Init(&mContext, mScene.get());
         mSwapCopyStage.Init(&mContext, mRtStage.GetRtOutput());
+        mSwapCopyStage.SetFlipY(true);
 
         RegisterRenderStage(&mRtStage);
         RegisterRenderStage(&mSwapCopyStage);

@@ -1,16 +1,20 @@
 #pragma once
 #include <foray_api.hpp>
-#include <stages/foray_raytracingstage.hpp>
-#include <util/foray_noisesource.hpp>
 #include <scene/globalcomponents/foray_lightmanager.hpp>
+#include <stages/foray_raytracingstage.hpp>
+#include <util/foray_envmap.hpp>
+#include <util/foray_noisesource.hpp>
 
 namespace complex_raytracer {
 
     inline const std::string RAYGEN_FILE     = "shaders/raygen.rgen";
     inline const std::string CLOSESTHIT_FILE = "shaders/default/closesthit.rchit";
     inline const std::string MISS_FILE       = "shaders/default/miss.rmiss";
-    inline const std::string VISI_MISS_FILE       = "shaders/visibilitytest/miss.rmiss";
-    inline const std::string SCENE_FILE      = DATA_DIR "/gltf/testbox/scene.gltf";
+    inline const std::string VISI_MISS_FILE  = "shaders/visibilitytest/miss.rmiss";
+
+    inline const std::string SCENE_FILE          = DATA_DIR "/gltf/testbox/scene.gltf";
+    /// @brief If true, will invert the viewport when blitting. Will invert the scene while loading to -Y up if false
+    inline constexpr bool    INVERT_BLIT_INSTEAD = true;
 
     class ComplexRaytracingStage : public foray::stages::ExtRaytracingStage
     {
@@ -43,7 +47,7 @@ namespace complex_raytracer {
         virtual void ApiRender(foray::base::FrameRenderInfo& renderInfo) override;
         virtual void ApiDestroy() override;
 
-        ComplexRaytracingStage                   mRtStage;
+        ComplexRaytracingStage               mRtStage;
         foray::stages::ImageToSwapchainStage mSwapCopyStage;
         std::unique_ptr<foray::scene::Scene> mScene;
     };

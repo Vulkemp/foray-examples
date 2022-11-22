@@ -10,13 +10,13 @@ namespace gbuffer {
     "Similar techniques are traditionally used for rasterized deferred rendering, but have found great use in raytraced rendering too.";
 
     inline const std::string OUTPUT_ABOUT_TEXTS[] = {
-      "Contains worldspace hitpoint positions in a rgba32f image. Can be used to launch rays from a first intersect calculated by rasterization, and as an input for denoising.",
-      "Contains worldpace hitpoint normals in a rgba32f image. Can be used to launch rays from a first intersect calculated by rasterization, and as an input for denoising.",
-      "Contains material base color in a rgba32f image. Can be used to calculate lighting information and as an input for denoising.",
-      "Contains screenspace pixel flow information in a rg32f image. For each pixel, defines a projection from current UV coordinates to previous frame UV coordinates. Used for temporal reprojection.",
+      "Contains worldspace hitpoint positions in a rgba16f image. Can be used to launch rays from a first intersect calculated by rasterization, and as an input for denoising.",
+      "Contains worldpace hitpoint normals in a rgba16f image. Can be used to launch rays from a first intersect calculated by rasterization, and as an input for denoising.",
+      "Contains material base color in a rgba16f image. Can be used to calculate lighting information and as an input for denoising.",
+      "Contains screenspace pixel flow information in a rg16f image. For each pixel, defines a projection from current UV coordinates to previous frame UV coordinates. Used for temporal reprojection.",
       "Contains material indices in a r32i image. Can be used as an input for denoisers and for deferred lighting calculation.",
       "Contains mesh instance indices in a r32u image. Can be used as an input for denoisers and object identification.",
-      "Contains processed depth information in a rg32f image. First channel is linear depth, second channel is a depth gradient. Useful for denoising.",
+      "Contains processed depth information in a rg16f image. First channel is linear depth, second channel is a depth gradient. Useful for denoising.",
       "Contains default vulkan depth format (can be read from shaders as r32f)."
     };
 

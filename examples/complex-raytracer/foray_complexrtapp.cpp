@@ -1,6 +1,7 @@
 #include "foray_complexrtapp.hpp"
 #include <gltf/foray_modelconverter.hpp>
 #include <scene/globalcomponents/foray_lightmanager.hpp>
+#include <scene/components/foray_freecameracontroller.hpp>
 
 namespace complex_raytracer {
     void ComplexRaytracingStage::Init(foray::core::Context* context, foray::scene::Scene* scene)
@@ -55,16 +56,23 @@ namespace complex_raytracer {
 
         foray::gltf::ModelConverter converter(mScene.get());
 
-        converter.LoadGltfModel(SCENE_FILE);
+        foray::gltf::ModelConverterOptions options{.FlipY = !INVERT_BLIT_INSTEAD};
+
+        converter.LoadGltfModel(SCENE_FILE, nullptr, options);
 
         mScene->UpdateTlasManager();
-        mScene->UseDefaultCamera();
+        mScene->UseDefaultCamera(INVERT_BLIT_INSTEAD);
         mScene->UpdateLightManager();
 
         foray::scene::gcomp::LightManager* lightManager = mScene->GetComponent<foray::scene::gcomp::LightManager>();
 
         mRtStage.Init(&mContext, mScene.get());
         mSwapCopyStage.Init(&mContext, mRtStage.GetRtOutput());
+
+        if constexpr(INVERT_BLIT_INSTEAD)
+        {
+            mSwapCopyStage.SetFlipY(true);
+        }
 
         RegisterRenderStage(&mRtStage);
         RegisterRenderStage(&mSwapCopyStage);

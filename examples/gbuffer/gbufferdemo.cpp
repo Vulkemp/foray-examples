@@ -14,26 +14,27 @@ namespace gbuffer {
 
             converter.LoadGltfModel(SCENE_FILE);
 
-            mScene->UseDefaultCamera();
+            mScene->UseDefaultCamera(true);
         }
 
         {  // Init and register render stages
 
             mGBufferStage.Init(&mContext, mScene.get());
 
-            mComparerStage.Init(&mContext);
+            mComparerStage.Init(&mContext, true);
             SetView(0, foray::stages::GBufferStage::EOutput::Albedo);
             SetView(1, foray::stages::GBufferStage::EOutput::Position);
             mComparerStage.SetMixValue(0.75);
 
-            mImguiStage.AddWindowDraw([this]() { this->HandleImGui(); });
-            mImguiStage.Init(&mContext, mComparerStage.GetImageOutput(mComparerStage.OutputName));
             mSwapCopyStage.Init(&mContext, mComparerStage.GetImageOutput(mComparerStage.OutputName));
+            mSwapCopyStage.SetFlipY(true);
+            mImguiStage.InitForSwapchain(&mContext);
+            mImguiStage.AddWindowDraw([this]() { this->HandleImGui(); });
 
             RegisterRenderStage(&mGBufferStage);
             RegisterRenderStage(&mComparerStage);
-            RegisterRenderStage(&mImguiStage);
             RegisterRenderStage(&mSwapCopyStage);
+            RegisterRenderStage(&mImguiStage);
         }
     }
     void GBufferDemoApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)
@@ -59,11 +60,11 @@ namespace gbuffer {
         // Record the comparer stage (displays any format to the screen)
         mComparerStage.RecordFrame(cmdBuffer, renderInfo);
 
-        // Record ImGui
-        mImguiStage.RecordFrame(cmdBuffer, renderInfo);
-
         // Copy comparer stage output to the swapchain
         mSwapCopyStage.RecordFrame(cmdBuffer, renderInfo);
+
+        // Record ImGui
+        mImguiStage.RecordFrame(cmdBuffer, renderInfo);
 
         // Prepare for present
         renderInfo.PrepareSwapchainImageForPresent(cmdBuffer);
