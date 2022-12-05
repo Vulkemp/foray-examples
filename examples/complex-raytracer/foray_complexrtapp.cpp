@@ -1,7 +1,7 @@
 #include "foray_complexrtapp.hpp"
 #include <gltf/foray_modelconverter.hpp>
-#include <scene/globalcomponents/foray_lightmanager.hpp>
 #include <scene/components/foray_freecameracontroller.hpp>
+#include <scene/globalcomponents/foray_lightmanager.hpp>
 
 namespace complex_raytracer {
     void ComplexRaytracingStage::Init(foray::core::Context* context, foray::scene::Scene* scene)
@@ -14,12 +14,12 @@ namespace complex_raytracer {
     {
         foray::core::ShaderCompilerConfig options{.IncludeDirs = {FORAY_SHADER_DIR}};
 
-        mShaderKeys.push_back(mContext->ShaderMan->CompileShader(RAYGEN_FILE, mRaygen, options));
-        mShaderKeys.push_back(mContext->ShaderMan->CompileShader(CLOSESTHIT_FILE, mClosestHit, options));
-        mShaderKeys.push_back(mContext->ShaderMan->CompileShader(ANYHIT_FILE,mAnyHit, options));
-        mShaderKeys.push_back(mContext->ShaderMan->CompileShader(MISS_FILE, mMiss, options));
-        mShaderKeys.push_back(mContext->ShaderMan->CompileShader(VISI_MISS_FILE, mVisiMiss, options));
-        mShaderKeys.push_back(mContext->ShaderMan->CompileShader(VISI_ANYHIT_FILE, mVisiAnyHit, options));
+        mShaderKeys.push_back(mRaygen.CompileFromSource(mContext, RAYGEN_FILE, options));
+        mShaderKeys.push_back(mClosestHit.CompileFromSource(mContext, CLOSESTHIT_FILE, options));
+        mShaderKeys.push_back(mAnyHit.CompileFromSource(mContext, ANYHIT_FILE, options));
+        mShaderKeys.push_back(mMiss.CompileFromSource(mContext, MISS_FILE, options));
+        mShaderKeys.push_back(mVisiMiss.CompileFromSource(mContext, VISI_MISS_FILE, options));
+        mShaderKeys.push_back(mVisiAnyHit.CompileFromSource(mContext, VISI_ANYHIT_FILE, options));
 
         mPipeline.GetRaygenSbt().SetGroup(0, &mRaygen);
         mPipeline.GetHitSbt().SetGroup(0, &mClosestHit, &mAnyHit, nullptr);

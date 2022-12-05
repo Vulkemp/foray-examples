@@ -9,9 +9,9 @@ namespace minimal_raytracer {
 
         // Compiles shaders and loads them into mRaygen, mClosestHit, mMiss ShaderModules.
         // Store compilation keys so that the Rt pipeline is recreated whenever the shaders change
-        mShaderKeys.push_back(mContext->ShaderMan->CompileShader(RAYGEN_FILE, mRaygen, options));
-        mShaderKeys.push_back(mContext->ShaderMan->CompileShader(CLOSESTHIT_FILE, mClosestHit, options));
-        mShaderKeys.push_back(mContext->ShaderMan->CompileShader(MISS_FILE, mMiss, options));
+        mShaderKeys.push_back(mRaygen.CompileFromSource(mContext, RAYGEN_FILE, options));
+        mShaderKeys.push_back(mClosestHit.CompileFromSource(mContext, CLOSESTHIT_FILE, options));
+        mShaderKeys.push_back(mMiss.CompileFromSource(mContext, MISS_FILE, options));
 
         // Configure shader binding table
         mPipeline.GetRaygenSbt().SetGroup(0, &mRaygen);
