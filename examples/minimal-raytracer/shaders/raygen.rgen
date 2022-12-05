@@ -5,10 +5,10 @@
 
 // Include structs and bindings
 
-#include "../../../foray/src/shaders/rt_common/bindpoints.glsl" // Defines constants for the bind indices that RaytracingStage uses
-#include "../../../foray/src/shaders/common/camera.glsl" // Binds camera matrices UBO
-#include "../../../foray/src/shaders/rt_common/tlas.glsl" // Binds Top Level Acceleration Structure
-#include "../../../foray/src/shaders/rt_common/imageoutput.glsl" // Binds the output storage image
+#include "rt_common/bindpoints.glsl" // Defines constants for the bind indices that RaytracingStage uses
+#include "common/camera.glsl" // Binds camera matrices UBO
+#include "rt_common/tlas.glsl" // Binds Top Level Acceleration Structure
+#include "rt_common/imageoutput.glsl" // Binds the output storage image
 
 #define HITPAYLOAD_OUT
 #include "./payload.glsl" // Bind the payload struct outgoing

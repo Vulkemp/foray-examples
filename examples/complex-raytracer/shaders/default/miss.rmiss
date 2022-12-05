@@ -5,7 +5,7 @@
 // Declare hitpayloads
 
 #define HITPAYLOAD_IN // This defines the payload as coming from a parent shader invocation (input variable and return variable of this shader)
-#include "../../../../foray/src/shaders/rt_common/payload.glsl"
+#include "rt_common/payload.glsl"
 
 void main()
 {

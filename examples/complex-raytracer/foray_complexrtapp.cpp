@@ -12,14 +12,14 @@ namespace complex_raytracer {
 
     void ComplexRaytracingStage::CreateRtPipeline()
     {
-        mRaygen.LoadFromSource(mContext, RAYGEN_FILE);
-        mClosestHit.LoadFromSource(mContext, CLOSESTHIT_FILE);
-        mAnyHit.LoadFromSource(mContext, ANYHIT_FILE);
-        mMiss.LoadFromSource(mContext, MISS_FILE);
-        mVisiMiss.LoadFromSource(mContext, VISI_MISS_FILE);
-        mVisiAnyHit.LoadFromSource(mContext, VISI_ANYHIT_FILE);
+        foray::core::ShaderCompilerConfig options{.IncludeDirs = {FORAY_SHADER_DIR}};
 
-        mShaderSourcePaths.insert(mShaderSourcePaths.begin(), {RAYGEN_FILE, CLOSESTHIT_FILE, ANYHIT_FILE, MISS_FILE, VISI_MISS_FILE, VISI_ANYHIT_FILE});
+        mShaderKeys.push_back(mContext->ShaderMan->CompileShader(RAYGEN_FILE, mRaygen, options));
+        mShaderKeys.push_back(mContext->ShaderMan->CompileShader(CLOSESTHIT_FILE, mClosestHit, options));
+        mShaderKeys.push_back(mContext->ShaderMan->CompileShader(ANYHIT_FILE,mAnyHit, options));
+        mShaderKeys.push_back(mContext->ShaderMan->CompileShader(MISS_FILE, mMiss, options));
+        mShaderKeys.push_back(mContext->ShaderMan->CompileShader(VISI_MISS_FILE, mVisiMiss, options));
+        mShaderKeys.push_back(mContext->ShaderMan->CompileShader(VISI_ANYHIT_FILE, mVisiAnyHit, options));
 
         mPipeline.GetRaygenSbt().SetGroup(0, &mRaygen);
         mPipeline.GetHitSbt().SetGroup(0, &mClosestHit, &mAnyHit, nullptr);

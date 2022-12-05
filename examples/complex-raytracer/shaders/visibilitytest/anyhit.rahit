@@ -6,12 +6,12 @@
 
 // Include structs and bindings
 
-#include "../../../../foray/src/shaders/rt_common/bindpoints.glsl" // Bindpoints (= descriptor set layout)
-#include "../../../../foray/src/shaders/rt_common/tlas.glsl"
-#include "../../../../foray/src/shaders/common/materialbuffer.glsl" // Material buffer for material information and texture array
-#include "../../../../foray/src/shaders/rt_common/geometrymetabuffer.glsl" // GeometryMeta information
-#include "../../../../foray/src/shaders/rt_common/geobuffers.glsl" // Vertex and index buffer aswell as accessor methods
-#include "../../../../foray/src/shaders/common/normaltbn.glsl" // Normal calculation in tangent space
+#include "rt_common/bindpoints.glsl" // Bindpoints (= descriptor set layout)
+#include "rt_common/tlas.glsl"
+#include "common/materialbuffer.glsl" // Material buffer for material information and texture array
+#include "rt_common/geometrymetabuffer.glsl" // GeometryMeta information
+#include "rt_common/geobuffers.glsl" // Vertex and index buffer aswell as accessor methods
+#include "common/normaltbn.glsl" // Normal calculation in tangent space
 
 
 #define VISIPAYLOAD_IN

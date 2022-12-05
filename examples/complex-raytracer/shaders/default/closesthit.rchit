@@ -6,20 +6,20 @@
 
 // Include structs and bindings
 
-#include "../../../../foray/src/shaders/rt_common/bindpoints.glsl" // Bindpoints (= descriptor set layout)
-#include "../../../../foray/src/shaders/common/materialbuffer.glsl" // Material buffer for material information and texture array
-#include "../../../../foray/src/shaders/rt_common/geometrymetabuffer.glsl" // GeometryMeta information
-#include "../../../../foray/src/shaders/rt_common/geobuffers.glsl" // Vertex and index buffer aswell as accessor methods
-#include "../../../../foray/src/shaders/common/normaltbn.glsl" // Normal calculation in tangent space
-#include "../../../../foray/src/shaders/common/lcrng.glsl"
-#include "../../../../foray/src/shaders/rt_common/tlas.glsl" // Binds Top Level Acceleration Structure
+#include "rt_common/bindpoints.glsl" // Bindpoints (= descriptor set layout)
+#include "common/materialbuffer.glsl" // Material buffer for material information and texture array
+#include "rt_common/geometrymetabuffer.glsl" // GeometryMeta information
+#include "rt_common/geobuffers.glsl" // Vertex and index buffer aswell as accessor methods
+#include "common/normaltbn.glsl" // Normal calculation in tangent space
+#include "common/lcrng.glsl"
+#include "rt_common/tlas.glsl" // Binds Top Level Acceleration Structure
 
 #define BIND_SIMPLIFIEDLIGHTARRAY 11
-#include "../../../../foray/src/shaders/rt_common/simplifiedlights.glsl"
+#include "rt_common/simplifiedlights.glsl"
 
-#include "../../../../foray/src/shaders/shading/constants.glsl"
-#include "../../../../foray/src/shaders/shading/sampling.glsl"
-#include "../../../../foray/src/shaders/shading/material.glsl"
+#include "shading/constants.glsl"
+#include "shading/sampling.glsl"
+#include "shading/material.glsl"
 
 // Declare hitpayloads
 
