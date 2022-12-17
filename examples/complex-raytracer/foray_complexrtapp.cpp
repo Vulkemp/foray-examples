@@ -69,8 +69,6 @@ namespace complex_raytracer {
         mScene->UseDefaultCamera(INVERT_BLIT_INSTEAD);
         mScene->UpdateLightManager();
 
-        foray::scene::gcomp::LightManager* lightManager = mScene->GetComponent<foray::scene::gcomp::LightManager>();
-
         mRtStage.Init(&mContext, mScene.get());
         mSwapCopyStage.Init(&mContext, mRtStage.GetRtOutput());
 

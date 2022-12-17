@@ -25,7 +25,7 @@
 
 #define HITPAYLOAD_IN
 #define HITPAYLOAD_OUT
-#include "../../../../foray/src/shaders/rt_common/payload.glsl"
+#include "rt_common/payload.glsl"
 #define VISIPAYLOAD_OUT
 #include "../visibilitytest/payload.glsl"
 
@@ -247,5 +247,7 @@ void main()
     {
         indirectLight = CollectIndirectLight(posWorldSpace, normalWorldSpace, material, probe);
     }
+    float rayDist = length(posWorldSpace - gl_WorldRayOriginEXT);
     ReturnPayload.Radiance = directLight + indirectLight + probe.EmissiveColor;
+    ReturnPayload.Distance = length(posWorldSpace - gl_WorldRayOriginEXT);
 }
