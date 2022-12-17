@@ -2,7 +2,7 @@
 #include <gltf/foray_modelconverter.hpp>
 
 namespace minimal_raytracer {
-    void MinimalRaytracingStage::CreateRtPipeline()
+    void MinimalRaytracingStage::ApiCreateRtPipeline()
     {
         // Compiling shaders with 'repo-root/foray/src/shaders' additional include directory
         foray::core::ShaderCompilerConfig options{.IncludeDirs = {FORAY_SHADER_DIR}};
@@ -22,7 +22,7 @@ namespace minimal_raytracer {
         mPipeline.Build(mContext, mPipelineLayout);
     }
 
-    void MinimalRaytracingStage::DestroyRtPipeline()
+    void MinimalRaytracingStage::ApiDestroyRtPipeline()
     {
         // Destroy pipeline and shader modules
         mPipeline.Destroy();
@@ -67,7 +67,7 @@ namespace minimal_raytracer {
     void MinimalRaytracerApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)
     {
         // Get and begin command buffer
-        foray::core::DeviceCommandBuffer& cmdBuffer = renderInfo.GetPrimaryCommandBuffer();
+        foray::core::DeviceSyncCommandBuffer& cmdBuffer = renderInfo.GetPrimaryCommandBuffer();
         cmdBuffer.Begin();
 
         // Update scene (uploads scene specific dynamic data such as node transformations, camera matrices, ...)

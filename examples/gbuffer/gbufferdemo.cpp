@@ -48,7 +48,7 @@ namespace gbuffer {
             }
         }
 
-        foray::core::DeviceCommandBuffer& cmdBuffer = renderInfo.GetPrimaryCommandBuffer();
+        foray::core::DeviceSyncCommandBuffer& cmdBuffer = renderInfo.GetPrimaryCommandBuffer();
         cmdBuffer.Begin();
 
         // Update the scene. This updates the scenegraph for animated objects, updates camera matrices, etc.

@@ -7,10 +7,10 @@ namespace complex_raytracer {
     void ComplexRaytracingStage::Init(foray::core::Context* context, foray::scene::Scene* scene)
     {
         mLightManager = scene->GetComponent<foray::scene::gcomp::LightManager>();
-        foray::stages::ExtRaytracingStage::Init(context, scene);
+        foray::stages::DefaultRaytracingStageBase::Init(context, scene);
     }
 
-    void ComplexRaytracingStage::CreateRtPipeline()
+    void ComplexRaytracingStage::ApiCreateRtPipeline()
     {
         foray::core::ShaderCompilerConfig options{.IncludeDirs = {FORAY_SHADER_DIR}};
 
@@ -29,7 +29,7 @@ namespace complex_raytracer {
         mPipeline.Build(mContext, mPipelineLayout);
     }
 
-    void ComplexRaytracingStage::DestroyRtPipeline()
+    void ComplexRaytracingStage::ApiDestroyRtPipeline()
     {
         mPipeline.Destroy();
         mRaygen.Destroy();
@@ -44,9 +44,9 @@ namespace complex_raytracer {
     {
         const uint32_t bindpoint_lights = 11;
 
-        mDescriptorSet.SetDescriptorAt(bindpoint_lights, mLightManager->GetBuffer().GetVkDescriptorInfo(), VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, RTSTAGEFLAGS);
+        mDescriptorSet.SetDescriptorAt(bindpoint_lights, mLightManager->GetBuffer().GetVkDescriptorInfo(), VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, foray::stages::RTSTAGEFLAGS);
 
-        foray::stages::ExtRaytracingStage::CreateOrUpdateDescriptors();
+        foray::stages::DefaultRaytracingStageBase::CreateOrUpdateDescriptors();
     }
 
     void ComplexRaytracerApp::ApiBeforeInit()
@@ -95,7 +95,7 @@ namespace complex_raytracer {
 
     void ComplexRaytracerApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)
     {
-        foray::core::DeviceCommandBuffer& cmdBuffer = renderInfo.GetPrimaryCommandBuffer();
+        foray::core::DeviceSyncCommandBuffer& cmdBuffer = renderInfo.GetPrimaryCommandBuffer();
         cmdBuffer.Begin();
         renderInfo.GetInFlightFrame()->ClearSwapchainImage(cmdBuffer, renderInfo.GetImageLayoutCache());
         mScene->Update(renderInfo, cmdBuffer);

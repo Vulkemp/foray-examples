@@ -1,6 +1,6 @@
 #pragma once
 #include <foray_api.hpp>
-#include <stages/foray_raytracingstage.hpp>
+#include <stages/foray_defaultraytracingstage.hpp>
 
 namespace minimal_raytracer {
 
@@ -9,11 +9,11 @@ namespace minimal_raytracer {
     inline const std::string MISS_FILE = "shaders/miss.rmiss";
     inline const std::string SCENE_FILE = DATA_DIR "/gltf/testbox/scene.gltf";
 
-    class MinimalRaytracingStage : public foray::stages::ExtRaytracingStage
+    class MinimalRaytracingStage : public foray::stages::DefaultRaytracingStageBase
     {
       public:
-        virtual void CreateRtPipeline() override;
-        virtual void DestroyRtPipeline() override;
+        virtual void ApiCreateRtPipeline() override;
+        virtual void ApiDestroyRtPipeline() override;
 
       protected:
         foray::core::ShaderModule mRaygen;

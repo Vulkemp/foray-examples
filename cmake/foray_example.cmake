@@ -8,10 +8,6 @@ function (foray_example)
     MESSAGE("--- << CMAKE of ${PROJECT_NAME} >> --- ")
     MESSAGE(STATUS "CURRENT SOURCE DIR \"${CMAKE_CURRENT_SOURCE_DIR}\"")
 
-    # Enable strict mode for own code
-    SET(CMAKE_CXX_FLAGS ${STRICT_FLAGS})
-
-
     # collect sources
     file(GLOB_RECURSE src "*.cpp")
     
@@ -21,15 +17,13 @@ function (foray_example)
         return()
     endif ()
 
-
     # Declare executable
     add_executable(${PROJECT_NAME} ${src})
-
     
-    # Assign Compile Flags
-    if (ENABLE_GBUFFER_BENCH)
-        target_compile_definitions(${PROJECT_NAME} ENABLE_GBUFFER_BENCH)
-    endif()
+    # Set strict mode for project only
+    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${STRICT_FLAGS})
+
+    # Set directories via compile macros
     target_compile_options(${PROJECT_NAME} PUBLIC "-DCWD_OVERRIDE=\"${CMAKE_CURRENT_LIST_DIR}\"")
     target_compile_options(${PROJECT_NAME} PUBLIC "-DDATA_DIR=\"${CMAKE_SOURCE_DIR}/data\"")
     target_compile_options(${PROJECT_NAME} PUBLIC "-DFORAY_SHADER_DIR=\"$CACHE{FORAY_SHADER_DIR}\"")

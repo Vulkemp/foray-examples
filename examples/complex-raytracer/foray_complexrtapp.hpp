@@ -1,7 +1,7 @@
 #pragma once
 #include <foray_api.hpp>
 #include <scene/globalcomponents/foray_lightmanager.hpp>
-#include <stages/foray_raytracingstage.hpp>
+#include <stages/foray_defaultraytracingstage.hpp>
 #include <util/foray_envmap.hpp>
 #include <util/foray_noisesource.hpp>
 
@@ -18,14 +18,14 @@ namespace complex_raytracer {
     /// @brief If true, will invert the viewport when blitting. Will invert the scene while loading to -Y up if false
     inline constexpr bool INVERT_BLIT_INSTEAD = true;
 
-    class ComplexRaytracingStage : public foray::stages::ExtRaytracingStage
+    class ComplexRaytracingStage : public foray::stages::DefaultRaytracingStageBase
     {
       public:
         virtual void Init(foray::core::Context* context, foray::scene::Scene* scene);
 
       protected:
-        virtual void CreateRtPipeline() override;
-        virtual void DestroyRtPipeline() override;
+        virtual void ApiCreateRtPipeline() override;
+        virtual void ApiDestroyRtPipeline() override;
 
         virtual void CreateOrUpdateDescriptors() override;
 
