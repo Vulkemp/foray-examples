@@ -1,5 +1,4 @@
 #include "foray_minimalrtapp.hpp"
-#include <gltf/foray_modelconverter.hpp>
 
 namespace minimal_raytracer {
     void MinimalRaytracingStage::ApiCreateRtPipeline()

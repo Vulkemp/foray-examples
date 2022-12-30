@@ -1,7 +1,4 @@
 #include "foray_complexrtapp.hpp"
-#include <gltf/foray_modelconverter.hpp>
-#include <scene/components/foray_freecameracontroller.hpp>
-#include <scene/globalcomponents/foray_lightmanager.hpp>
 
 namespace complex_raytracer {
     void ComplexRaytracingStage::Init(foray::core::Context* context, foray::scene::Scene* scene)

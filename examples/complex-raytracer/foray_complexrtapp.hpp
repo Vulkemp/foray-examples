@@ -1,9 +1,6 @@
 #pragma once
 #include <foray_api.hpp>
 #include <scene/globalcomponents/foray_lightmanager.hpp>
-#include <stages/foray_defaultraytracingstage.hpp>
-#include <util/foray_envmap.hpp>
-#include <util/foray_noisesource.hpp>
 
 namespace complex_raytracer {
 
