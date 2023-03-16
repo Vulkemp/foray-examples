@@ -77,8 +77,12 @@ namespace gbuffer {
         mScene->HandleEvent(event);
         // The comparer stage handles events to capture current mouse position
         mComparerStage.HandleEvent(event);
-        // The imgui stage handles events to animate the UI
-        mImguiStage.ProcessSdlEvent(&(event->RawSdlEventData));
+        const foray::osi::EventRawSDL* sdlevent = dynamic_cast<const foray::osi::EventRawSDL*>(event);
+        if(!!sdlevent)
+        {
+            // The imgui stage handles events to animate the UI
+            mImguiStage.ProcessSdlEvent(&(sdlevent->Data));
+        }
     }
 
     void GBufferDemoApp::SetView(int32_t index, foray::stages::GBufferStage::EOutput view)
