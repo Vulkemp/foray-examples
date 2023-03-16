@@ -5,6 +5,9 @@
 #include <scene/globalcomponents/foray_materialmanager.hpp>
 
 namespace gbuffer {
+    void GBufferDemoApp::ApiBeforeInstanceCreate(vkb::InstanceBuilder& instanceBuilder)
+    {
+    }
     void GBufferDemoApp::ApiInit()
     {
         {  // Load Scene
@@ -19,11 +22,20 @@ namespace gbuffer {
 
         {  // Init and register render stages
 
-            mGBufferStage.Init(&mContext, mScene.get());
+            mGBufferStage.EnableBuiltInFeature(foray::stages::ConfigurableRasterStage::BuiltInFeaturesFlagBits::ALPHATEST);
+            mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::Position), foray::stages::ConfigurableRasterStage::Templates::WorldPos);
+            mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::Normal), foray::stages::ConfigurableRasterStage::Templates::WorldNormal);
+            mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::Albedo), foray::stages::ConfigurableRasterStage::Templates::Albedo);
+            mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::Motion), foray::stages::ConfigurableRasterStage::Templates::ScreenMotion);
+            mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::MaterialIdx), foray::stages::ConfigurableRasterStage::Templates::MaterialId);
+            mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::MeshInstanceIdx), foray::stages::ConfigurableRasterStage::Templates::MeshInstanceId);
+            mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::LinearZ), foray::stages::ConfigurableRasterStage::Templates::DepthAndDerivative);
+
+            mGBufferStage.Build(&mContext, mScene.get(), "GBuffer Stage");
 
             mComparerStage.Init(&mContext, true);
-            SetView(0, foray::stages::GBufferStage::EOutput::Albedo);
-            SetView(1, foray::stages::GBufferStage::EOutput::Position);
+            SetView(0, EOutput::Albedo);
+            SetView(1, EOutput::Position);
             mComparerStage.SetMixValue(0.75);
 
             mSwapCopyStage.Init(&mContext, mComparerStage.GetImageOutput(mComparerStage.OutputName));
@@ -85,7 +97,7 @@ namespace gbuffer {
         }
     }
 
-    void GBufferDemoApp::SetView(int32_t index, foray::stages::GBufferStage::EOutput view)
+    void GBufferDemoApp::SetView(int32_t index, EOutput view)
     {
         // since this changes descriptorsets, we need to make sure any GPU work is finished and halted
         foray::AssertVkResult(mContext.VkbDispatchTable->deviceWaitIdle());
@@ -93,7 +105,18 @@ namespace gbuffer {
         mView[index]        = view;
         mViewChanged[index] = false;
 
-        foray::stages::ComparerStage::InputInfo input{.Image        = mGBufferStage.GetImageEOutput(view),
+        foray::core::ManagedImage* image = nullptr;
+
+        if(view != EOutput::Depth)
+        {
+            image = mGBufferStage.GetImageOutput(NAMEOF_ENUM(view));
+        }
+        else
+        {
+            image = mGBufferStage.GetDepthImage();
+        }
+
+        foray::stages::ComparerStage::InputInfo input{.Image        = image,
                                                       .ChannelCount = 4,
                                                       .Scale        = glm::vec4(1.f),
                                                       .Aspect       = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT,
@@ -102,13 +125,13 @@ namespace gbuffer {
         // Set channel count, type and scale properly
         switch(view)
         {
-            case foray::stages::GBufferStage::EOutput::Motion:
+            case EOutput::Motion:
                 input.ChannelCount = 2;  // UV X,Y
                 break;
-            case foray::stages::GBufferStage::EOutput::LinearZ:
+            case EOutput::LinearZ:
                 input.ChannelCount = 2;  // UV X,Y
                 break;
-            case foray::stages::GBufferStage::EOutput::MaterialIdx: {
+            case EOutput::MaterialIdx: {
                 foray::scene::gcomp::MaterialManager* matBuffer = mScene->GetComponent<foray::scene::gcomp::MaterialManager>();
                 input.ChannelCount                              = 1;
                 float scale                                     = 1 / std::max<float>(1.f, (float)matBuffer->GetVector().size());
@@ -116,7 +139,7 @@ namespace gbuffer {
                 input.Type                                      = foray::stages::ComparerStage::EInputType::Int;
                 break;
             }
-            case foray::stages::GBufferStage::EOutput::MeshInstanceIdx: {
+            case EOutput::MeshInstanceIdx: {
                 foray::scene::gcomp::DrawDirector* drawDirector = mScene->GetComponent<foray::scene::gcomp::DrawDirector>();
                 input.ChannelCount                              = 1;
                 float scale                                     = 1 / std::max<float>(1.f, (float)drawDirector->GetTotalCount());
@@ -124,7 +147,7 @@ namespace gbuffer {
                 input.Type                                      = foray::stages::ComparerStage::EInputType::Uint;
                 break;
             }
-            case foray::stages::GBufferStage::EOutput::Depth:
+            case EOutput::Depth:
                 input.ChannelCount = 1;
                 input.Aspect       = VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT;
                 break;
@@ -138,9 +161,8 @@ namespace gbuffer {
     void GBufferDemoApp::HandleImGui()
     {
         using namespace foray::stages;
-        const GBufferStage::EOutput OUTPUTS[] = {GBufferStage::EOutput::Position, GBufferStage::EOutput::Normal,      GBufferStage::EOutput::Albedo,
-                                                 GBufferStage::EOutput::Motion,   GBufferStage::EOutput::MaterialIdx, GBufferStage::EOutput::MeshInstanceIdx,
-                                                 GBufferStage::EOutput::LinearZ,  GBufferStage::EOutput::Depth};
+        const EOutput OUTPUTS[] = {EOutput::Position,    EOutput::Normal,          EOutput::Albedo,  EOutput::Motion,
+                                   EOutput::MaterialIdx, EOutput::MeshInstanceIdx, EOutput::LinearZ, EOutput::Depth};
 
         if(ImGui::Begin("Controls", nullptr))
         {
@@ -165,8 +187,8 @@ namespace gbuffer {
                 std::string outputName(NAMEOF_ENUM(mView[i]));
                 if(ImGui::BeginCombo(labelName.c_str(), outputName.c_str()))
                 {
-                    GBufferStage::EOutput newOutput = mView[i];
-                    for(GBufferStage::EOutput output : OUTPUTS)
+                    EOutput newOutput = mView[i];
+                    for(EOutput output : OUTPUTS)
                     {
                         bool        selected = output == mView[i];
                         std::string outputName(NAMEOF_ENUM(output));
