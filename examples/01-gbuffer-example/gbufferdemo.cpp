@@ -3,6 +3,7 @@
 #include <nameof/nameof.hpp>
 #include <scene/globalcomponents/foray_drawmanager.hpp>
 #include <scene/globalcomponents/foray_materialmanager.hpp>
+#include <scene/components/foray_freecameracontroller.hpp>
 
 namespace gbuffer {
     void GBufferDemoApp::ApiBeforeInstanceCreate(vkb::InstanceBuilder& instanceBuilder)
@@ -43,6 +44,7 @@ namespace gbuffer {
             mSwapCopyStage.SetFlipY(true);
             mImguiStage.InitForSwapchain(&mContext, &mWindowSwapchain, resizeOrder++);
             mImguiStage.AddWindowDraw([this]() { this->HandleImGui(); });
+            mImguiStage.AddWindowDraw(&foray::scene::ncomp::FreeCameraController::RenderImguiHelpWindow);
         }
     }
     void GBufferDemoApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)
