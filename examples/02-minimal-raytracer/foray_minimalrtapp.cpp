@@ -45,22 +45,10 @@ namespace minimal_raytracer {
         mScene->UseDefaultCamera(true);
 
         // Initialize and configure stages
-        mRtStage.Init(&mContext, mScene.get());
+        mRtStage.Init(&mContext, mScene.get(), &mWindowSwapchain);
+        mRtStage.SetResizeOrder(1);
         mSwapCopyStage.Init(&mContext, mRtStage.GetRtOutput());
         mSwapCopyStage.SetFlipY(true);
-
-        RegisterRenderStage(&mRtStage);
-        RegisterRenderStage(&mSwapCopyStage);
-    }
-
-    void MinimalRaytracerApp::ApiOnEvent(const foray::osi::Event* event)
-    {
-        mScene->InvokeOnEvent(event);
-    }
-
-    void MinimalRaytracerApp::ApiOnResized(VkExtent2D size)
-    {
-        mScene->InvokeOnResized(size);
     }
 
     void MinimalRaytracerApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)
@@ -70,7 +58,7 @@ namespace minimal_raytracer {
         cmdBuffer.Begin();
 
         // Update scene (uploads scene specific dynamic data such as node transformations, camera matrices, ...)
-        mScene->Update(renderInfo, cmdBuffer);
+        mScene->Update(cmdBuffer, renderInfo, &mWindowSwapchain);
 
         // Call ray tracer
         mRtStage.RecordFrame(cmdBuffer, renderInfo);

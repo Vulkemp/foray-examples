@@ -1,10 +1,10 @@
 #include "foray_complexrtapp.hpp"
 
 namespace complex_raytracer {
-    void ComplexRaytracingStage::Init(foray::core::Context* context, foray::scene::Scene* scene)
+    void ComplexRaytracingStage::Init(foray::core::Context* context, foray::scene::Scene* scene, foray::stages::RenderDomain* domain, int32_t resizeOrder)
     {
         mLightManager = scene->GetComponent<foray::scene::gcomp::LightManager>();
-        foray::stages::DefaultRaytracingStageBase::Init(context, scene);
+        foray::stages::DefaultRaytracingStageBase::Init(context, scene, domain, resizeOrder);
     }
 
     void ComplexRaytracingStage::ApiCreateRtPipeline()
@@ -46,10 +46,10 @@ namespace complex_raytracer {
         foray::stages::DefaultRaytracingStageBase::CreateOrUpdateDescriptors();
     }
 
-    void ComplexRaytracerApp::ApiBeforeInit()
-    {
-        mInstance.SetEnableDebugReport(false);
-    }
+    // void ComplexRaytracerApp::ApiBeforeInit()
+    // {
+    //     mInstance.SetEnableDebugReport(false);
+    // }
     void ComplexRaytracerApp::ApiInit()
     {
         mWindowSwapchain.GetWindow().DisplayMode(foray::osi::EDisplayMode::WindowedResizable);
@@ -66,26 +66,14 @@ namespace complex_raytracer {
         mScene->UseDefaultCamera(INVERT_BLIT_INSTEAD);
         mScene->UpdateLightManager();
 
-        mRtStage.Init(&mContext, mScene.get());
+        mRtStage.Init(&mContext, mScene.get(), &mWindowSwapchain);
+        mRtStage.SetResizeOrder(1);
         mSwapCopyStage.Init(&mContext, mRtStage.GetRtOutput());
 
         if constexpr(INVERT_BLIT_INSTEAD)
         {
             mSwapCopyStage.SetFlipY(true);
         }
-
-        RegisterRenderStage(&mRtStage);
-        RegisterRenderStage(&mSwapCopyStage);
-    }
-
-    void ComplexRaytracerApp::ApiOnEvent(const foray::osi::Event* event)
-    {
-        mScene->InvokeOnEvent(event);
-    }
-
-    void ComplexRaytracerApp::ApiOnResized(VkExtent2D size)
-    {
-        mScene->InvokeOnResized(size);
     }
 
     void ComplexRaytracerApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)
@@ -93,7 +81,7 @@ namespace complex_raytracer {
         foray::core::DeviceSyncCommandBuffer& cmdBuffer = renderInfo.GetPrimaryCommandBuffer();
         cmdBuffer.Begin();
         renderInfo.GetInFlightFrame()->ClearSwapchainImage(cmdBuffer, renderInfo.GetImageLayoutCache());
-        mScene->Update(renderInfo, cmdBuffer);
+        mScene->Update(cmdBuffer, renderInfo, &mWindowSwapchain);
         mRtStage.RecordFrame(cmdBuffer, renderInfo);
         mSwapCopyStage.RecordFrame(cmdBuffer, renderInfo);
         renderInfo.GetInFlightFrame()->PrepareSwapchainImageForPresent(cmdBuffer, renderInfo.GetImageLayoutCache());

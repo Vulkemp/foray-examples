@@ -5,13 +5,7 @@ namespace example {
     {
         virtual void ApiInit() override;
 
-        virtual void ApiOnResized(VkExtent2D size) override;
-
-        virtual void ApiOnEvent(const foray::osi::Event* event) override;
-
         virtual void ApiRender(foray::base::FrameRenderInfo& renderInfo) override;
-
-        virtual void ApiOnShadersRecompiled(std::unordered_set<uint64_t>& recompiledShaderKeys) override;
 
         virtual void ApiDestroy() override;
     };

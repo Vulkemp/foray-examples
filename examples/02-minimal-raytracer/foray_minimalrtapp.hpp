@@ -24,10 +24,6 @@ namespace minimal_raytracer {
     {
       protected:
         virtual void ApiInit() override;
-        virtual void ApiOnEvent(const foray::osi::Event* event) override;
-
-        virtual void ApiOnResized(VkExtent2D size) override;
-
         virtual void ApiRender(foray::base::FrameRenderInfo& renderInfo) override;
         virtual void ApiDestroy() override;
 

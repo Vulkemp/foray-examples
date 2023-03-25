@@ -5,14 +5,6 @@ namespace example{
 
 	}
 
-	void App::ApiOnResized(VkExtent2D size) {
-
-	}
-
-	void App::ApiOnEvent(const foray::osi::Event* event)
-	{
-    }
-
     void App::ApiRender(foray::base::FrameRenderInfo& renderInfo)
     {
         foray::core::DeviceSyncCommandBuffer& cmdBuffer = renderInfo.GetPrimaryCommandBuffer();
@@ -27,11 +19,6 @@ namespace example{
 
         // Submit() ends and submits the command buffer
         cmdBuffer.Submit();
-	}
-
-	void App::ApiOnShadersRecompiled(std::unordered_set<uint64_t>& recompiledShaderKeys)
-	{
-
 	}
 
 	void App::ApiDestroy() {

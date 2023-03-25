@@ -18,7 +18,7 @@ namespace complex_raytracer {
     class ComplexRaytracingStage : public foray::stages::DefaultRaytracingStageBase
     {
       public:
-        virtual void Init(foray::core::Context* context, foray::scene::Scene* scene);
+        virtual void Init(foray::core::Context* context, foray::scene::Scene* scene, foray::stages::RenderDomain* domain, int32_t resizeOrder = 0);
 
       protected:
         virtual void ApiCreateRtPipeline() override;
@@ -39,11 +39,7 @@ namespace complex_raytracer {
     class ComplexRaytracerApp : public foray::base::DefaultAppBase
     {
       protected:
-        virtual void ApiBeforeInit() override;
         virtual void ApiInit() override;
-        virtual void ApiOnEvent(const foray::osi::Event* event) override;
-
-        virtual void ApiOnResized(VkExtent2D size) override;
 
         virtual void ApiRender(foray::base::FrameRenderInfo& renderInfo) override;
         virtual void ApiDestroy() override;

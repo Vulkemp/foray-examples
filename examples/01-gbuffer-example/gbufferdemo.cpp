@@ -21,6 +21,7 @@ namespace gbuffer {
         }
 
         {  // Init and register render stages
+            int32_t resizeOrder = 0;
 
             mGBufferStage.EnableBuiltInFeature(foray::stages::ConfigurableRasterStage::BuiltInFeaturesFlagBits::ALPHATEST);
             mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::Position), foray::stages::ConfigurableRasterStage::Templates::WorldPos);
@@ -31,22 +32,17 @@ namespace gbuffer {
             mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::MeshInstanceIdx), foray::stages::ConfigurableRasterStage::Templates::MeshInstanceId);
             mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::LinearZ), foray::stages::ConfigurableRasterStage::Templates::DepthAndDerivative);
 
-            mGBufferStage.Build(&mContext, mScene.get(), "GBuffer Stage");
+            mGBufferStage.Build(&mContext, mScene.get(), &mWindowSwapchain, resizeOrder++, "GBuffer Stage");
 
-            mComparerStage.Init(&mContext, true);
+            mComparerStage.Init(&mContext, &mWindowSwapchain, true, resizeOrder++);
             SetView(0, EOutput::Albedo);
             SetView(1, EOutput::Position);
             mComparerStage.SetMixValue(0.75);
 
             mSwapCopyStage.Init(&mContext, mComparerStage.GetImageOutput(mComparerStage.OutputName));
             mSwapCopyStage.SetFlipY(true);
-            mImguiStage.InitForSwapchain(&mContext);
+            mImguiStage.InitForSwapchain(&mContext, &mWindowSwapchain, resizeOrder++);
             mImguiStage.AddWindowDraw([this]() { this->HandleImGui(); });
-
-            RegisterRenderStage(&mGBufferStage);
-            RegisterRenderStage(&mComparerStage);
-            RegisterRenderStage(&mSwapCopyStage);
-            RegisterRenderStage(&mImguiStage);
         }
     }
     void GBufferDemoApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)
@@ -64,37 +60,30 @@ namespace gbuffer {
         cmdBuffer.Begin();
 
         // Update the scene. This updates the scenegraph for animated objects, updates camera matrices, etc.
-        mScene->Update(renderInfo, cmdBuffer);
+        mScene->Update(cmdBuffer, renderInfo, &mWindowSwapchain);
+
+        int32_t updateOrder = 1;
 
         // Record the rasterized GBuffer stage
         mGBufferStage.RecordFrame(cmdBuffer, renderInfo);
+        mGBufferStage.SetResizeOrder(updateOrder++);
 
         // Record the comparer stage (displays any format to the screen)
         mComparerStage.RecordFrame(cmdBuffer, renderInfo);
+        mComparerStage.SetResizeOrder(updateOrder++);
 
         // Copy comparer stage output to the swapchain
         mSwapCopyStage.RecordFrame(cmdBuffer, renderInfo);
+        // SwapCopyStage doesn't handle any events, order doesn't matter
 
         // Record ImGui
         mImguiStage.RecordFrame(cmdBuffer, renderInfo);
+        mImguiStage.SetResizeOrder(updateOrder++);
 
         // Prepare for present
         renderInfo.PrepareSwapchainImageForPresent(cmdBuffer);
 
         cmdBuffer.Submit();
-    }
-    void GBufferDemoApp::ApiOnEvent(const foray::osi::Event* event)
-    {
-        // Scene event handling includes moving the camera around
-        mScene->HandleEvent(event);
-        // The comparer stage handles events to capture current mouse position
-        mComparerStage.HandleEvent(event);
-        const foray::osi::EventRawSDL* sdlevent = dynamic_cast<const foray::osi::EventRawSDL*>(event);
-        if(!!sdlevent)
-        {
-            // The imgui stage handles events to animate the UI
-            mImguiStage.ProcessSdlEvent(&(sdlevent->Data));
-        }
     }
 
     void GBufferDemoApp::SetView(int32_t index, EOutput view)
