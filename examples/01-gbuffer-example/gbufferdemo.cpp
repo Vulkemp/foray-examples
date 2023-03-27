@@ -135,7 +135,7 @@ namespace gbuffer {
                 input.ChannelCount                              = 1;
                 float scale                                     = 1 / std::max<float>(1.f, (float)drawDirector->GetTotalCount());
                 input.Scale                                     = glm::vec4(scale, 0.f, 0.f, 1.f);
-                input.Type                                      = foray::stages::ComparerStage::EInputType::Uint;
+                input.Type                                      = foray::stages::ComparerStage::EInputType::Int;
                 break;
             }
             case EOutput::Depth:
