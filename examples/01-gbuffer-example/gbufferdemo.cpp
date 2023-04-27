@@ -42,7 +42,7 @@ namespace gbuffer {
 
             mSwapCopyStage.Init(&mContext, mComparerStage.GetImageOutput(mComparerStage.OutputName));
             mSwapCopyStage.SetFlipY(true);
-            mImguiStage.InitForSwapchain(&mContext, &mWindowSwapchain, resizeOrder++);
+            mImguiStage.InitForSwapchain(&mContext, resizeOrder++);
             mImguiStage.AddWindowDraw([this]() { this->HandleImGui(); });
             mImguiStage.AddWindowDraw(&foray::scene::ncomp::FreeCameraController::RenderImguiHelpWindow);
         }
@@ -91,7 +91,7 @@ namespace gbuffer {
     void GBufferDemoApp::SetView(int32_t index, EOutput view)
     {
         // since this changes descriptorsets, we need to make sure any GPU work is finished and halted
-        foray::AssertVkResult(mContext.VkbDispatchTable->deviceWaitIdle());
+        foray::AssertVkResult(mContext.DispatchTable().deviceWaitIdle());
 
         mView[index]        = view;
         mViewChanged[index] = false;
