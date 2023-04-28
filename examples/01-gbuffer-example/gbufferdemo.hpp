@@ -36,13 +36,12 @@ namespace gbuffer {
     class GBufferDemoApp : public foray::base::DefaultAppBase
     {
       public:
-        GBufferDemoApp() = default;
-
+        inline explicit GBufferDemoApp(foray::base::AppLoopBase* apploop) : foray::base::DefaultAppBase(apploop) {}
+        virtual ~GBufferDemoApp();
       protected:
         virtual void ApiBeforeInstanceCreate(vkb::InstanceBuilder& instanceBuilder) override;
         virtual void ApiInit() override;
         virtual void ApiRender(foray::base::FrameRenderInfo& renderInfo) override;
-        virtual void ApiDestroy() override;
 
         void SetView(int32_t index, EOutput view);
 

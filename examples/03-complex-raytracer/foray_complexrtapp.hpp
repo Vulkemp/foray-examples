@@ -38,11 +38,13 @@ namespace complex_raytracer {
 
     class ComplexRaytracerApp : public foray::base::DefaultAppBase
     {
+      public:
+        inline explicit ComplexRaytracerApp(foray::base::AppLoopBase* apploop) : foray::base::DefaultAppBase(apploop) {}
+        virtual ~ComplexRaytracerApp();
       protected:
         virtual void ApiInit() override;
 
         virtual void ApiRender(foray::base::FrameRenderInfo& renderInfo) override;
-        virtual void ApiDestroy() override;
 
         foray::Heap<ComplexRaytracingStage>               mRtStage;
         foray::Heap<foray::stages::ImageToSwapchainStage> mSwapCopyStage;

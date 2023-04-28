@@ -219,8 +219,9 @@ namespace gbuffer {
         }
     }
 
-    void GBufferDemoApp::ApiDestroy()
+    GBufferDemoApp::~GBufferDemoApp()
     {
+        mDevice->GetDispatchTable().deviceWaitIdle();
         mScene = nullptr;  // The unique ptr will call destructor upon assigning a nullptr value
         mGBufferStage = nullptr;
         mComparerStage = nullptr;

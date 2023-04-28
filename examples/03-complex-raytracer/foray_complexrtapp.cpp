@@ -98,8 +98,9 @@ namespace complex_raytracer {
         cmdBuffer.Submit();
     }
 
-    void ComplexRaytracerApp::ApiDestroy()
+    ComplexRaytracerApp::~ComplexRaytracerApp()
     {
+        mDevice->GetDispatchTable().deviceWaitIdle();
         mRtStage.Delete();
         mSwapCopyStage.Delete();
         mScene = nullptr;

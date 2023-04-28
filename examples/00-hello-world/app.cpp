@@ -21,7 +21,7 @@ namespace example{
         cmdBuffer.Submit();
 	}
 
-	void App::ApiDestroy() {
-
+	App::~App() {
+        mDevice->GetDispatchTable().deviceWaitIdle();
 	}
 };

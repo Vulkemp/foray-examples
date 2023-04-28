@@ -83,8 +83,9 @@ namespace minimal_raytracer {
         cmdBuffer.Submit();
     }
 
-    void MinimalRaytracerApp::ApiDestroy()
+    MinimalRaytracerApp::~MinimalRaytracerApp()
     {
+        mDevice->GetDispatchTable().deviceWaitIdle();
         mRtStage       = nullptr;
         mSwapCopyStage = nullptr;
         mScene         = nullptr;

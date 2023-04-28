@@ -25,10 +25,12 @@ namespace minimal_raytracer {
 
     class MinimalRaytracerApp : public foray::base::DefaultAppBase
     {
+      public:
+        inline explicit MinimalRaytracerApp(foray::base::AppLoopBase* apploop) : foray::base::DefaultAppBase(apploop) {}
+        virtual ~MinimalRaytracerApp();
       protected:
         virtual void ApiInit() override;
         virtual void ApiRender(foray::base::FrameRenderInfo& renderInfo) override;
-        virtual void ApiDestroy() override;
 
         foray::Heap<MinimalRaytracingStage>               mRtStage;
         foray::Heap<foray::stages::ImageToSwapchainStage> mSwapCopyStage;

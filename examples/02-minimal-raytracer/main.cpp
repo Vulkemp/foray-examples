@@ -10,7 +10,7 @@ namespace minimal_raytracer {
     int example(std::vector<std::string>& args)
     {
         foray::osi::OverrideCurrentWorkingDirectory(CWD_OVERRIDE);
-        MinimalRaytracerApp app;
+        foray::base::ApplicationLoop<MinimalRaytracerApp> app;
         return app.Run();
     }
 }  // namespace minimal_raytracer

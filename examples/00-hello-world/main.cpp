@@ -6,6 +6,6 @@ int main(int argv, char** args)
 {
 	// let cmake define our working directory
     foray::osi::OverrideCurrentWorkingDirectory(CWD_OVERRIDE);
-    example::App app;
+    foray::base::ApplicationLoop<example::App> app;
 	return app.Run();
 }

@@ -10,7 +10,7 @@ namespace complex_raytracer {
     int example(std::vector<std::string>& args)
     {
         foray::osi::OverrideCurrentWorkingDirectory(CWD_OVERRIDE);
-        ComplexRaytracerApp app;
+        foray::base::ApplicationLoop<ComplexRaytracerApp> app;
         return app.Run();
     }
 }  // namespace complex_raytracer

@@ -7,7 +7,7 @@ namespace gbuffer {
     int example(std::vector<std::string>& args)
     {
         foray::osi::OverrideCurrentWorkingDirectory(CWD_OVERRIDE);
-        GBufferDemoApp app;
+        foray::base::ApplicationLoop<GBufferDemoApp> app;
         return app.Run();
     }
 }  // namespace foray::blank
