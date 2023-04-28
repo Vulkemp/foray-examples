@@ -49,13 +49,13 @@ namespace gbuffer {
         void HandleImGui();
 
         /// @brief The GBuffer stage renders scene information using rasterization
-        foray::stages::ConfigurableRasterStage mGBufferStage;
+        foray::Heap<foray::stages::ConfigurableRasterStage> mGBufferStage;
         /// @brief The comparer stage allows side by side view of multi-type input images
-        foray::stages::ComparerStage mComparerStage;
+        foray::Heap<foray::stages::ComparerStage> mComparerStage;
         /// @brief The ImGui stage renders the GUI
-        foray::stages::ImguiStage mImguiStage;
+        foray::Heap<foray::stages::ImguiStage> mImguiStage;
         /// @brief The swap copy stage blits the output image onto the swapchain
-        foray::stages::ImageToSwapchainStage mSwapCopyStage;
+        foray::Heap<foray::stages::ImageToSwapchainStage> mSwapCopyStage;
 
         /// @brief The currently viewed GBuffer outputs (left and right side)
         EOutput mView[2];
@@ -63,6 +63,6 @@ namespace gbuffer {
         bool mViewChanged[2] = {false, false};
 
         /// @brief Scene
-        std::unique_ptr<foray::scene::Scene> mScene;
+        foray::Heap<foray::scene::Scene> mScene;
     };
 }  // namespace gbuffer

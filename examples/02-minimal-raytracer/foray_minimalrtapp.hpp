@@ -3,21 +3,24 @@
 
 namespace minimal_raytracer {
 
-    inline const std::string RAYGEN_FILE = "shaders/raygen.rgen";
+    inline const std::string RAYGEN_FILE     = "shaders/raygen.rgen";
     inline const std::string CLOSESTHIT_FILE = "shaders/closesthit.rchit";
-    inline const std::string MISS_FILE = "shaders/miss.rmiss";
-    inline const std::string SCENE_FILE = DATA_DIR "/gltf/testbox/scene.gltf";
+    inline const std::string MISS_FILE       = "shaders/miss.rmiss";
+    inline const std::string SCENE_FILE      = DATA_DIR "/gltf/testbox/scene.gltf";
 
     class MinimalRaytracingStage : public foray::stages::DefaultRaytracingStageBase
     {
       public:
+        MinimalRaytracingStage(foray::core::Context* context, foray::scene::Scene* scene, foray::stages::RenderDomain* domain);
+        virtual ~MinimalRaytracingStage() = default;
+
         virtual void ApiCreateRtPipeline() override;
         virtual void ApiDestroyRtPipeline() override;
 
       protected:
-        foray::core::ShaderModule mRaygen;
-        foray::core::ShaderModule mClosestHit;
-        foray::core::ShaderModule mMiss;
+        foray::Local<foray::core::ShaderModule> mRaygen;
+        foray::Local<foray::core::ShaderModule> mClosestHit;
+        foray::Local<foray::core::ShaderModule> mMiss;
     };
 
     class MinimalRaytracerApp : public foray::base::DefaultAppBase
@@ -27,9 +30,9 @@ namespace minimal_raytracer {
         virtual void ApiRender(foray::base::FrameRenderInfo& renderInfo) override;
         virtual void ApiDestroy() override;
 
-        MinimalRaytracingStage        mRtStage;
-        foray::stages::ImageToSwapchainStage mSwapCopyStage;
-        std::unique_ptr<foray::scene::Scene> mScene;
+        foray::Heap<MinimalRaytracingStage>               mRtStage;
+        foray::Heap<foray::stages::ImageToSwapchainStage> mSwapCopyStage;
+        foray::Heap<foray::scene::Scene>                  mScene;
     };
 
-}  // namespace foray::minimal_raytracer
+}  // namespace minimal_raytracer

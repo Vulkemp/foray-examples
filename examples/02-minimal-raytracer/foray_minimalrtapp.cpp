@@ -1,6 +1,12 @@
 #include "foray_minimalrtapp.hpp"
 
 namespace minimal_raytracer {
+    MinimalRaytracingStage::MinimalRaytracingStage(foray::core::Context* context, foray::scene::Scene* scene, foray::stages::RenderDomain* domain)
+     : foray::stages::DefaultRaytracingStageBase(context, domain, 0)
+    {
+        foray::stages::DefaultRaytracingStageBase::Init(scene);
+    }
+
     void MinimalRaytracingStage::ApiCreateRtPipeline()
     {
         // Compiling shaders with 'repo-root/foray/src/shaders' additional include directory
@@ -8,35 +14,41 @@ namespace minimal_raytracer {
 
         // Compiles shaders and loads them into mRaygen, mClosestHit, mMiss ShaderModules.
         // Store compilation keys so that the Rt pipeline is recreated whenever the shaders change
-        mShaderKeys.push_back(mRaygen.CompileFromSource(mContext, RAYGEN_FILE, options));
-        mShaderKeys.push_back(mClosestHit.CompileFromSource(mContext, CLOSESTHIT_FILE, options));
-        mShaderKeys.push_back(mMiss.CompileFromSource(mContext, MISS_FILE, options));
+        mRaygen.New();
+        mClosestHit.New();
+        mMiss.New();
+        mShaderKeys.push_back(mRaygen->CompileFromSource(mContext, RAYGEN_FILE, options));
+        mShaderKeys.push_back(mClosestHit->CompileFromSource(mContext, CLOSESTHIT_FILE, options));
+        mShaderKeys.push_back(mMiss->CompileFromSource(mContext, MISS_FILE, options));
 
         // Configure shader binding table
-        mPipeline.GetRaygenSbt().SetGroup(0, &mRaygen);
-        mPipeline.GetHitSbt().SetGroup(0, &mClosestHit, nullptr, nullptr);
-        mPipeline.GetMissSbt().SetGroup(0, &mMiss);
+        foray::rtpipe::RtPipeline::Builder builder;
+        builder.GetRaygenSbtBuilder().SetEntryModule(0, mRaygen.Get());
+        builder.GetRaygenSbtBuilder().SetEntryModule(0, mRaygen.Get());
+        builder.GetHitSbtBuilder().SetEntryModules(0, mClosestHit.Get(), nullptr, nullptr);
+        builder.GetMissSbtBuilder().SetEntryModule(0, mMiss.Get());
+        builder.SetPipelineLayout(mPipelineLayout.GetPipelineLayout());
 
         // Build Binding Table and Pipeline
-        mPipeline.Build(mContext, mPipelineLayout);
+        mPipeline.New(mContext, builder);
     }
 
     void MinimalRaytracingStage::ApiDestroyRtPipeline()
     {
         // Destroy pipeline and shader modules
-        mPipeline.Destroy();
-        mRaygen.Destroy();
-        mClosestHit.Destroy();
-        mMiss.Destroy();
+        mPipeline.Delete();
+        mRaygen.Delete();
+        mClosestHit.Delete();
+        mMiss.Delete();
     }
 
     void MinimalRaytracerApp::ApiInit()
     {
-        mWindowSwapchain.GetWindow().DisplayMode(foray::osi::EDisplayMode::WindowedResizable);
+        mWindowSwapchain->GetWindow().DisplayMode(foray::osi::EDisplayMode::WindowedResizable);
 
         // Load scene
-        mScene = std::make_unique<foray::scene::Scene>(&mContext);
-        foray::gltf::ModelConverter converter(mScene.get());
+        mScene.New(&mContext);
+        foray::gltf::ModelConverter converter(mScene.Get());
         converter.LoadGltfModel(SCENE_FILE);
 
         // Initialize TLAS
@@ -45,10 +57,10 @@ namespace minimal_raytracer {
         mScene->UseDefaultCamera(true);
 
         // Initialize and configure stages
-        mRtStage.Init(&mContext, mScene.get(), &mWindowSwapchain);
-        mRtStage.SetResizeOrder(1);
-        mSwapCopyStage.Init(&mContext, mRtStage.GetRtOutput());
-        mSwapCopyStage.SetFlipY(true);
+        mRtStage.New(&mContext, mScene.Get(), mWindowSwapchain.Get());
+        mRtStage->SetResizeOrder(1);
+        mSwapCopyStage.New(&mContext, mRtStage->GetRtOutput());
+        mSwapCopyStage->SetFlipY(true);
     }
 
     void MinimalRaytracerApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)
@@ -58,14 +70,14 @@ namespace minimal_raytracer {
         cmdBuffer.Begin();
 
         // Update scene (uploads scene specific dynamic data such as node transformations, camera matrices, ...)
-        mScene->Update(cmdBuffer, renderInfo, &mWindowSwapchain);
+        mScene->Update(cmdBuffer, renderInfo, mWindowSwapchain.Get());
 
         // Call ray tracer
-        mRtStage.RecordFrame(cmdBuffer, renderInfo);
+        mRtStage->RecordFrame(cmdBuffer, renderInfo);
 
         // Copy ray tracing output to swapchain
-        mSwapCopyStage.RecordFrame(cmdBuffer, renderInfo);
-        
+        mSwapCopyStage->RecordFrame(cmdBuffer, renderInfo);
+
         // Prepare swapchain image for present and submit command buffer
         renderInfo.GetInFlightFrame()->PrepareSwapchainImageForPresent(cmdBuffer, renderInfo.GetImageLayoutCache());
         cmdBuffer.Submit();
@@ -73,8 +85,8 @@ namespace minimal_raytracer {
 
     void MinimalRaytracerApp::ApiDestroy()
     {
-        mRtStage.Destroy();
-        mSwapCopyStage.Destroy();
-        mScene = nullptr;
+        mRtStage       = nullptr;
+        mSwapCopyStage = nullptr;
+        mScene         = nullptr;
     }
 }  // namespace minimal_raytracer

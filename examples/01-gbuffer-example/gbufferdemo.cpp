@@ -12,9 +12,9 @@ namespace gbuffer {
     void GBufferDemoApp::ApiInit()
     {
         {  // Load Scene
-            mScene = std::make_unique<foray::scene::Scene>(&mContext);
+            mScene.New(&mContext);
 
-            foray::gltf::ModelConverter converter(mScene.get());
+            foray::gltf::ModelConverter converter(mScene.Get());
 
             converter.LoadGltfModel(SCENE_FILE);
 
@@ -24,27 +24,29 @@ namespace gbuffer {
         {  // Init and register render stages
             int32_t resizeOrder = 0;
 
-            mGBufferStage.EnableBuiltInFeature(foray::stages::ConfigurableRasterStage::BuiltInFeaturesFlagBits::ALPHATEST);
-            mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::Position), foray::stages::ConfigurableRasterStage::Templates::WorldPos);
-            mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::Normal), foray::stages::ConfigurableRasterStage::Templates::WorldNormal);
-            mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::Albedo), foray::stages::ConfigurableRasterStage::Templates::Albedo);
-            mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::Motion), foray::stages::ConfigurableRasterStage::Templates::ScreenMotion);
-            mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::MaterialIdx), foray::stages::ConfigurableRasterStage::Templates::MaterialId);
-            mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::MeshInstanceIdx), foray::stages::ConfigurableRasterStage::Templates::MeshInstanceId);
-            mGBufferStage.AddOutput(NAMEOF_ENUM(EOutput::LinearZ), foray::stages::ConfigurableRasterStage::Templates::DepthAndDerivative);
+            mGBufferStage.New();
+            mGBufferStage->EnableBuiltInFeature(foray::stages::ConfigurableRasterStage::BuiltInFeaturesFlagBits::ALPHATEST);
+            mGBufferStage->AddOutput(NAMEOF_ENUM(EOutput::Position), foray::stages::ConfigurableRasterStage::Templates::WorldPos);
+            mGBufferStage->AddOutput(NAMEOF_ENUM(EOutput::Normal), foray::stages::ConfigurableRasterStage::Templates::WorldNormal);
+            mGBufferStage->AddOutput(NAMEOF_ENUM(EOutput::Albedo), foray::stages::ConfigurableRasterStage::Templates::Albedo);
+            mGBufferStage->AddOutput(NAMEOF_ENUM(EOutput::Motion), foray::stages::ConfigurableRasterStage::Templates::ScreenMotion);
+            mGBufferStage->AddOutput(NAMEOF_ENUM(EOutput::MaterialIdx), foray::stages::ConfigurableRasterStage::Templates::MaterialId);
+            mGBufferStage->AddOutput(NAMEOF_ENUM(EOutput::MeshInstanceIdx), foray::stages::ConfigurableRasterStage::Templates::MeshInstanceId);
+            mGBufferStage->AddOutput(NAMEOF_ENUM(EOutput::LinearZ), foray::stages::ConfigurableRasterStage::Templates::DepthAndDerivative);
 
-            mGBufferStage.Build(&mContext, mScene.get(), &mWindowSwapchain, resizeOrder++, "GBuffer Stage");
+            mGBufferStage->Build(&mContext, mScene.Get(), mWindowSwapchain.Get(), resizeOrder++, "GBuffer Stage");
 
-            mComparerStage.Init(&mContext, &mWindowSwapchain, true, resizeOrder++);
+            mComparerStage.New(&mContext, mWindowSwapchain.Get(), true, resizeOrder++);
             SetView(0, EOutput::Albedo);
             SetView(1, EOutput::Position);
-            mComparerStage.SetMixValue(0.75);
+            mComparerStage->SetMixValue(0.75);
 
-            mSwapCopyStage.Init(&mContext, mComparerStage.GetImageOutput(mComparerStage.OutputName));
-            mSwapCopyStage.SetFlipY(true);
-            mImguiStage.InitForSwapchain(&mContext, resizeOrder++);
-            mImguiStage.AddWindowDraw([this]() { this->HandleImGui(); });
-            mImguiStage.AddWindowDraw(&foray::scene::ncomp::FreeCameraController::RenderImguiHelpWindow);
+            mSwapCopyStage.New(&mContext, mComparerStage->GetImageOutput(mComparerStage->OutputName));
+            mSwapCopyStage->SetFlipY(true);
+            mImguiStage.New();
+            mImguiStage->InitForSwapchain(&mContext, resizeOrder++);
+            mImguiStage->AddWindowDraw([this]() { this->HandleImGui(); });
+            mImguiStage->AddWindowDraw(&foray::scene::ncomp::FreeCameraController::RenderImguiHelpWindow);
         }
     }
     void GBufferDemoApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)
@@ -62,25 +64,25 @@ namespace gbuffer {
         cmdBuffer.Begin();
 
         // Update the scene. This updates the scenegraph for animated objects, updates camera matrices, etc.
-        mScene->Update(cmdBuffer, renderInfo, &mWindowSwapchain);
+        mScene->Update(cmdBuffer, renderInfo, mWindowSwapchain.Get());
 
         int32_t updateOrder = 1;
 
         // Record the rasterized GBuffer stage
-        mGBufferStage.RecordFrame(cmdBuffer, renderInfo);
-        mGBufferStage.SetResizeOrder(updateOrder++);
+        mGBufferStage->RecordFrame(cmdBuffer, renderInfo);
+        mGBufferStage->SetResizeOrder(updateOrder++);
 
         // Record the comparer stage (displays any format to the screen)
-        mComparerStage.RecordFrame(cmdBuffer, renderInfo);
-        mComparerStage.SetResizeOrder(updateOrder++);
+        mComparerStage->RecordFrame(cmdBuffer, renderInfo);
+        mComparerStage->SetResizeOrder(updateOrder++);
 
         // Copy comparer stage output to the swapchain
-        mSwapCopyStage.RecordFrame(cmdBuffer, renderInfo);
+        mSwapCopyStage->RecordFrame(cmdBuffer, renderInfo);
         // SwapCopyStage doesn't handle any events, order doesn't matter
 
         // Record ImGui
-        mImguiStage.RecordFrame(cmdBuffer, renderInfo);
-        mImguiStage.SetResizeOrder(updateOrder++);
+        mImguiStage->RecordFrame(cmdBuffer, renderInfo);
+        mImguiStage->SetResizeOrder(updateOrder++);
 
         // Prepare for present
         renderInfo.PrepareSwapchainImageForPresent(cmdBuffer);
@@ -100,11 +102,11 @@ namespace gbuffer {
 
         if(view != EOutput::Depth)
         {
-            image = mGBufferStage.GetImageOutput(NAMEOF_ENUM(view));
+            image = mGBufferStage->GetImageOutput(NAMEOF_ENUM(view));
         }
         else
         {
-            image = mGBufferStage.GetDepthImage();
+            image = mGBufferStage->GetDepthImage();
         }
 
         foray::stages::ComparerStage::InputInfo input{.Image        = image,
@@ -146,7 +148,7 @@ namespace gbuffer {
                 break;
         }
 
-        mComparerStage.SetInput(index, input);
+        mComparerStage->SetInput(index, input);
     }
 
     void GBufferDemoApp::HandleImGui()
@@ -163,10 +165,10 @@ namespace gbuffer {
                 ImGui::TextWrapped("%s", GBUFFER_ABOUT.c_str());
                 ImGui::Unindent(3.f);
             }
-            float mix = mComparerStage.GetMixValue();
+            float mix = mComparerStage->GetMixValue();
             if(ImGui::DragFloat("Mix", &mix, 0.01f, 0.f, 1.f, nullptr, ImGuiSliderFlags_AlwaysClamp))
             {
-                mComparerStage.SetMixValue(mix);
+                mComparerStage->SetMixValue(mix);
             }
 
 
@@ -207,7 +209,7 @@ namespace gbuffer {
             ImGui::Spacing();
             if(ImGui::CollapsingHeader("Pipette"))
             {
-                ComparerStage::PipetteValue pipette = mComparerStage.GetPipetteValue();
+                ComparerStage::PipetteValue pipette = mComparerStage->GetPipetteValue();
                 ImGui::LabelText("Value", "( %f, %f, %f, %f )", pipette.Value.x, pipette.Value.y, pipette.Value.z, pipette.Value.w);
                 ImGui::LabelText("Texture UV", "(%f, %f )", pipette.UvPos.x, pipette.UvPos.y);
                 ImGui::LabelText("Mouse Pos", "( %i, %i )", pipette.TexelPos.x, pipette.TexelPos.y);
@@ -220,9 +222,9 @@ namespace gbuffer {
     void GBufferDemoApp::ApiDestroy()
     {
         mScene = nullptr;  // The unique ptr will call destructor upon assigning a nullptr value
-        mGBufferStage.Destroy();
-        mComparerStage.Destroy();
-        mImguiStage.Destroy();
-        mSwapCopyStage.Destroy();
+        mGBufferStage = nullptr;
+        mComparerStage = nullptr;
+        mImguiStage = nullptr;
+        mSwapCopyStage = nullptr;
     }
 }  // namespace gbuffer

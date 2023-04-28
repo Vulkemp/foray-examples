@@ -18,7 +18,7 @@ namespace complex_raytracer {
     class ComplexRaytracingStage : public foray::stages::DefaultRaytracingStageBase
     {
       public:
-        virtual void Init(foray::core::Context* context, foray::scene::Scene* scene, foray::stages::RenderDomain* domain, int32_t resizeOrder = 0);
+        ComplexRaytracingStage(foray::core::Context* context, foray::scene::Scene* scene, foray::stages::RenderDomain* domain, int32_t resizeOrder = 0);
 
       protected:
         virtual void ApiCreateRtPipeline() override;
@@ -26,12 +26,12 @@ namespace complex_raytracer {
 
         virtual void CreateOrUpdateDescriptors() override;
 
-        foray::core::ShaderModule mRaygen;
-        foray::core::ShaderModule mClosestHit;
-        foray::core::ShaderModule mAnyHit;
-        foray::core::ShaderModule mMiss;
-        foray::core::ShaderModule mVisiMiss;
-        foray::core::ShaderModule mVisiAnyHit;
+        foray::Local<foray::core::ShaderModule> mRaygen;
+        foray::Local<foray::core::ShaderModule> mClosestHit;
+        foray::Local<foray::core::ShaderModule> mAnyHit;
+        foray::Local<foray::core::ShaderModule> mMiss;
+        foray::Local<foray::core::ShaderModule> mVisiMiss;
+        foray::Local<foray::core::ShaderModule> mVisiAnyHit;
 
         foray::scene::gcomp::LightManager* mLightManager;
     };
@@ -44,9 +44,9 @@ namespace complex_raytracer {
         virtual void ApiRender(foray::base::FrameRenderInfo& renderInfo) override;
         virtual void ApiDestroy() override;
 
-        ComplexRaytracingStage               mRtStage;
-        foray::stages::ImageToSwapchainStage mSwapCopyStage;
-        std::unique_ptr<foray::scene::Scene> mScene;
+        foray::Heap<ComplexRaytracingStage>               mRtStage;
+        foray::Heap<foray::stages::ImageToSwapchainStage> mSwapCopyStage;
+        foray::Heap<foray::scene::Scene>                  mScene;
     };
 
 }  // namespace complex_raytracer
