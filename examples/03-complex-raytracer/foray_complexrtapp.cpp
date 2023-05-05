@@ -12,18 +12,12 @@ namespace complex_raytracer {
     {
         foray::core::ShaderCompilerConfig options{.IncludeDirs = {FORAY_SHADER_DIR}};
 
-        mRaygen.New();
-        mClosestHit.New();
-        mAnyHit.New();
-        mMiss.New();
-        mVisiMiss.New();
-        mVisiAnyHit.New();
-        mShaderKeys.push_back(mRaygen->CompileFromSource(mContext, RAYGEN_FILE, options));
-        mShaderKeys.push_back(mClosestHit->CompileFromSource(mContext, CLOSESTHIT_FILE, options));
-        mShaderKeys.push_back(mAnyHit->CompileFromSource(mContext, ANYHIT_FILE, options));
-        mShaderKeys.push_back(mMiss->CompileFromSource(mContext, MISS_FILE, options));
-        mShaderKeys.push_back(mVisiMiss->CompileFromSource(mContext, VISI_MISS_FILE, options));
-        mShaderKeys.push_back(mVisiAnyHit->CompileFromSource(mContext, VISI_ANYHIT_FILE, options));
+        mShaderKeys.push_back(mContext->ShaderMan->CompileAndLoadShader(RAYGEN_FILE, mRaygen, options));
+        mShaderKeys.push_back(mContext->ShaderMan->CompileAndLoadShader(CLOSESTHIT_FILE, mClosestHit, options));
+        mShaderKeys.push_back(mContext->ShaderMan->CompileAndLoadShader(ANYHIT_FILE, mAnyHit, options));
+        mShaderKeys.push_back(mContext->ShaderMan->CompileAndLoadShader(MISS_FILE, mMiss, options));
+        mShaderKeys.push_back(mContext->ShaderMan->CompileAndLoadShader(VISI_MISS_FILE, mVisiMiss, options));
+        mShaderKeys.push_back(mContext->ShaderMan->CompileAndLoadShader(VISI_ANYHIT_FILE, mVisiAnyHit, options));
 
         foray::rtpipe::RtPipeline::Builder builder;
         builder.GetRaygenSbtBuilder().SetEntryModule(0, mRaygen.Get());
@@ -31,7 +25,7 @@ namespace complex_raytracer {
         builder.GetHitSbtBuilder().SetEntryModules(1, nullptr, mVisiAnyHit.Get(), nullptr);
         builder.GetMissSbtBuilder().SetEntryModule(0, mMiss.Get());
         builder.GetMissSbtBuilder().SetEntryModule(1, mVisiMiss.Get());
-        builder.SetPipelineLayout(mPipelineLayout.GetPipelineLayout());
+        builder.SetPipelineLayout(mPipelineLayout->GetPipelineLayout());
         mPipeline.New(mContext, builder);
     }
 

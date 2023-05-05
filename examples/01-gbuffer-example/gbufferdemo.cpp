@@ -24,17 +24,17 @@ namespace gbuffer {
         {  // Init and register render stages
             int32_t resizeOrder = 0;
 
-            mGBufferStage.New();
-            mGBufferStage->EnableBuiltInFeature(foray::stages::ConfigurableRasterStage::BuiltInFeaturesFlagBits::ALPHATEST);
-            mGBufferStage->AddOutput(NAMEOF_ENUM(EOutput::Position), foray::stages::ConfigurableRasterStage::Templates::WorldPos);
-            mGBufferStage->AddOutput(NAMEOF_ENUM(EOutput::Normal), foray::stages::ConfigurableRasterStage::Templates::WorldNormal);
-            mGBufferStage->AddOutput(NAMEOF_ENUM(EOutput::Albedo), foray::stages::ConfigurableRasterStage::Templates::Albedo);
-            mGBufferStage->AddOutput(NAMEOF_ENUM(EOutput::Motion), foray::stages::ConfigurableRasterStage::Templates::ScreenMotion);
-            mGBufferStage->AddOutput(NAMEOF_ENUM(EOutput::MaterialIdx), foray::stages::ConfigurableRasterStage::Templates::MaterialId);
-            mGBufferStage->AddOutput(NAMEOF_ENUM(EOutput::MeshInstanceIdx), foray::stages::ConfigurableRasterStage::Templates::MeshInstanceId);
-            mGBufferStage->AddOutput(NAMEOF_ENUM(EOutput::LinearZ), foray::stages::ConfigurableRasterStage::Templates::DepthAndDerivative);
+            foray::stages::ConfigurableRasterStage::Builder builder;
+            builder.EnableBuiltInFeature(foray::stages::ConfigurableRasterStage::BuiltInFeaturesFlagBits::ALPHATEST);
+            builder.AddOutput(NAMEOF_ENUM(EOutput::Position), foray::stages::ConfigurableRasterStage::Templates::WorldPos);
+            builder.AddOutput(NAMEOF_ENUM(EOutput::Normal), foray::stages::ConfigurableRasterStage::Templates::WorldNormal);
+            builder.AddOutput(NAMEOF_ENUM(EOutput::Albedo), foray::stages::ConfigurableRasterStage::Templates::Albedo);
+            builder.AddOutput(NAMEOF_ENUM(EOutput::Motion), foray::stages::ConfigurableRasterStage::Templates::ScreenMotion);
+            builder.AddOutput(NAMEOF_ENUM(EOutput::MaterialIdx), foray::stages::ConfigurableRasterStage::Templates::MaterialId);
+            builder.AddOutput(NAMEOF_ENUM(EOutput::MeshInstanceIdx), foray::stages::ConfigurableRasterStage::Templates::MeshInstanceId);
+            builder.AddOutput(NAMEOF_ENUM(EOutput::LinearZ), foray::stages::ConfigurableRasterStage::Templates::DepthAndDerivative);
 
-            mGBufferStage->Build(&mContext, mScene.Get(), mWindowSwapchain.Get(), resizeOrder++, "GBuffer Stage");
+            mGBufferStage.New(&mContext, builder, mScene.Get(), mWindowSwapchain.Get(), resizeOrder++, "GBuffer Stage");
 
             mComparerStage.New(&mContext, mWindowSwapchain.Get(), true, resizeOrder++);
             SetView(0, EOutput::Albedo);
@@ -43,8 +43,7 @@ namespace gbuffer {
 
             mSwapCopyStage.New(&mContext, mComparerStage->GetImageOutput(mComparerStage->OutputName));
             mSwapCopyStage->SetFlipY(true);
-            mImguiStage.New();
-            mImguiStage->InitForSwapchain(&mContext, resizeOrder++);
+            mImguiStage.New(&mContext, resizeOrder++);
             mImguiStage->AddWindowDraw([this]() { this->HandleImGui(); });
             mImguiStage->AddWindowDraw(&foray::scene::ncomp::FreeCameraController::RenderImguiHelpWindow);
         }

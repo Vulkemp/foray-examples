@@ -14,12 +14,9 @@ namespace minimal_raytracer {
 
         // Compiles shaders and loads them into mRaygen, mClosestHit, mMiss ShaderModules.
         // Store compilation keys so that the Rt pipeline is recreated whenever the shaders change
-        mRaygen.New();
-        mClosestHit.New();
-        mMiss.New();
-        mShaderKeys.push_back(mRaygen->CompileFromSource(mContext, RAYGEN_FILE, options));
-        mShaderKeys.push_back(mClosestHit->CompileFromSource(mContext, CLOSESTHIT_FILE, options));
-        mShaderKeys.push_back(mMiss->CompileFromSource(mContext, MISS_FILE, options));
+        mShaderKeys.push_back(mContext->ShaderMan->CompileAndLoadShader(RAYGEN_FILE, mRaygen, options));
+        mShaderKeys.push_back(mContext->ShaderMan->CompileAndLoadShader(CLOSESTHIT_FILE, mClosestHit, options));
+        mShaderKeys.push_back(mContext->ShaderMan->CompileAndLoadShader(MISS_FILE, mMiss, options));
 
         // Configure shader binding table
         foray::rtpipe::RtPipeline::Builder builder;
@@ -27,7 +24,7 @@ namespace minimal_raytracer {
         builder.GetRaygenSbtBuilder().SetEntryModule(0, mRaygen.Get());
         builder.GetHitSbtBuilder().SetEntryModules(0, mClosestHit.Get(), nullptr, nullptr);
         builder.GetMissSbtBuilder().SetEntryModule(0, mMiss.Get());
-        builder.SetPipelineLayout(mPipelineLayout.GetPipelineLayout());
+        builder.SetPipelineLayout(mPipelineLayout->GetPipelineLayout());
 
         // Build Binding Table and Pipeline
         mPipeline.New(mContext, builder);
