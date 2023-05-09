@@ -50,10 +50,6 @@ namespace complex_raytracer {
         foray::stages::DefaultRaytracingStageBase::CreateOrUpdateDescriptors();
     }
 
-    // void ComplexRaytracerApp::ApiBeforeInit()
-    // {
-    //     mInstance.SetEnableDebugReport(false);
-    // }
     void ComplexRaytracerApp::ApiInit()
     {
         mWindowSwapchain->GetWindow().DisplayMode(foray::osi::EDisplayMode::WindowedResizable);
