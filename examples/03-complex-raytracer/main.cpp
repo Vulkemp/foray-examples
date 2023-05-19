@@ -1,7 +1,7 @@
 #include "foray_complexrtapp.hpp"
 #include <foray/basics.hpp>
 #include <foray/logger.hpp>
-#include <foray/osi/env.hpp>
+#include <foray/osi/path.hpp>
 #include <vector>
 
 namespace complex_raytracer {
