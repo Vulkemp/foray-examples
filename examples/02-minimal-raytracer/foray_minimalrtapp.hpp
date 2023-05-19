@@ -1,5 +1,5 @@
 #pragma once
-#include <foray_api.hpp>
+#include <foray/api.hpp>
 
 namespace minimal_raytracer {
 

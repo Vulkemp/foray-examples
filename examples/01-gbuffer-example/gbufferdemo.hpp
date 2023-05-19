@@ -1,6 +1,7 @@
 #pragma once
-#include <foray_api.hpp>
-#include <stages/foray_comparerstage.hpp>
+#include <foray/bench/bench.hpp>
+#include <foray/api.hpp>
+#include <foray/stages/comparerstage.hpp>
 
 namespace gbuffer {
 
@@ -38,6 +39,7 @@ namespace gbuffer {
       public:
         inline explicit GBufferDemoApp(foray::base::AppLoopBase* apploop) : foray::base::DefaultAppBase(apploop) {}
         virtual ~GBufferDemoApp();
+
       protected:
         virtual void ApiBeforeInstanceCreate(vkb::InstanceBuilder& instanceBuilder) override;
         virtual void ApiInit() override;
@@ -60,6 +62,8 @@ namespace gbuffer {
         EOutput mView[2];
         /// @brief Dirty markerfor the GBuffer output views (left and right side)
         bool mViewChanged[2] = {false, false};
+
+        foray::Heap<foray::bench::BenchmarkForward<foray::bench::ImguiLogSink>> mImguiBenchSink;
 
         /// @brief Scene
         foray::Heap<foray::scene::Scene> mScene;

@@ -1,25 +1,27 @@
 #include "gbufferdemo.hpp"
 #include <imgui/imgui.h>
 #include <nameof/nameof.hpp>
-#include <scene/globalcomponents/foray_drawmanager.hpp>
-#include <scene/globalcomponents/foray_materialmanager.hpp>
-#include <scene/components/foray_freecameracontroller.hpp>
+#include <foray/scene/components/freecameracontroller.hpp>
+#include <foray/scene/globalcomponents/drawmanager.hpp>
+#include <foray/scene/globalcomponents/materialmanager.hpp>
 
 namespace gbuffer {
-    void GBufferDemoApp::ApiBeforeInstanceCreate(vkb::InstanceBuilder& instanceBuilder)
-    {
-    }
+    void GBufferDemoApp::ApiBeforeInstanceCreate(vkb::InstanceBuilder& instanceBuilder) {}
     void GBufferDemoApp::ApiInit()
     {
         {  // Load Scene
             mScene.New(&mContext);
 
-            foray::gltf::ModelConverter converter(mScene.Get());
+
+            foray::gltf::ModelConverter                              converter(mScene.Get());
+            foray::bench::BenchmarkForward<foray::bench::LoggerSink> benchForward(&converter.GetBenchmark(), "Model Load");
 
             converter.LoadGltfModel(SCENE_FILE);
 
             mScene->UseDefaultCamera(true);
         }
+
+        mImguiBenchSink.New(&mHostFrameRecordBenchmark);
 
         {  // Init and register render stages
             int32_t resizeOrder = 0;
@@ -46,6 +48,7 @@ namespace gbuffer {
             mImguiStage.New(&mContext, resizeOrder++);
             mImguiStage->AddWindowDraw([this]() { this->HandleImGui(); });
             mImguiStage->AddWindowDraw(&foray::scene::ncomp::FreeCameraController::RenderImguiHelpWindow);
+            mImguiStage->AddWindowDraw([this]() { this->mImguiBenchSink->Sink.DisplayImguiWindow(); });
         }
     }
     void GBufferDemoApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)
@@ -221,10 +224,10 @@ namespace gbuffer {
     GBufferDemoApp::~GBufferDemoApp()
     {
         mDevice->GetDispatchTable().deviceWaitIdle();
-        mScene = nullptr;  // The unique ptr will call destructor upon assigning a nullptr value
-        mGBufferStage = nullptr;
+        mScene         = nullptr;  // The unique ptr will call destructor upon assigning a nullptr value
+        mGBufferStage  = nullptr;
         mComparerStage = nullptr;
-        mImguiStage = nullptr;
+        mImguiStage    = nullptr;
         mSwapCopyStage = nullptr;
     }
 }  // namespace gbuffer

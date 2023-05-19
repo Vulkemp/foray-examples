@@ -1,7 +1,7 @@
 #include "foray_minimalrtapp.hpp"
-#include <foray_basics.hpp>
-#include <foray_logger.hpp>
-#include <osi/foray_env.hpp>
+#include <foray/basics.hpp>
+#include <foray/logger.hpp>
+#include <foray/osi/env.hpp>
 #include <vector>
 
 namespace minimal_raytracer {

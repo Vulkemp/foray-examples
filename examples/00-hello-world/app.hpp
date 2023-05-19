@@ -1,4 +1,4 @@
-#include <foray_api.hpp>
+#include <foray/api.hpp>
 
 namespace example {
     class App : public foray::base::DefaultAppBase

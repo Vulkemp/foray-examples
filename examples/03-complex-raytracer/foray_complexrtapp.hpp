@@ -1,6 +1,6 @@
 #pragma once
-#include <foray_api.hpp>
-#include <scene/globalcomponents/foray_lightmanager.hpp>
+#include <foray/api.hpp>
+#include <foray/scene/globalcomponents/lightmanager.hpp>
 
 namespace complex_raytracer {
 
