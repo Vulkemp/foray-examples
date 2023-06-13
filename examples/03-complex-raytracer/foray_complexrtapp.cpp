@@ -1,4 +1,5 @@
 #include "foray_complexrtapp.hpp"
+#include <imgui/imgui.h>
 
 namespace complex_raytracer {
     ComplexRaytracingStage::ComplexRaytracingStage(foray::core::Context* context, foray::scene::Scene* scene, foray::stages::RenderDomain* domain, int32_t resizeOrder)
@@ -68,12 +69,17 @@ namespace complex_raytracer {
 
         mRtStage.New(&mContext, mScene.Get(), mWindowSwapchain.Get());
         mRtStage->SetResizeOrder(1);
-        mSwapCopyStage.New(&mContext, mRtStage->GetRtOutput());
+        // mSwapCopyStage.New(&mContext, mRtStage->GetRtOutput());
+        mTonemap.New(&mContext, mRtStage->GetRtOutput(), 2);
 
-        if constexpr(INVERT_BLIT_INSTEAD)
-        {
-            mSwapCopyStage->SetFlipY(true);
-        }
+        mImgui.New(&mContext, 3);
+        mImgui->AddWindowDraw([this](){
+            if (ImGui::Begin("Tonemapping"))
+            {
+                this->mTonemap->ImguiSetup();
+            }
+            ImGui::End();
+        });
     }
 
     void ComplexRaytracerApp::ApiRender(foray::base::FrameRenderInfo& renderInfo)
@@ -83,7 +89,8 @@ namespace complex_raytracer {
         renderInfo.GetInFlightFrame()->ClearSwapchainImage(cmdBuffer, renderInfo.GetImageLayoutCache());
         mScene->Update(cmdBuffer, renderInfo, mWindowSwapchain.Get());
         mRtStage->RecordFrame(cmdBuffer, renderInfo);
-        mSwapCopyStage->RecordFrame(cmdBuffer, renderInfo);
+        mTonemap->RecordFrame(cmdBuffer, renderInfo);
+        mImgui->RecordFrame(cmdBuffer, renderInfo);
         renderInfo.GetInFlightFrame()->PrepareSwapchainImageForPresent(cmdBuffer, renderInfo.GetImageLayoutCache());
         cmdBuffer.Submit();
     }
@@ -91,8 +98,5 @@ namespace complex_raytracer {
     ComplexRaytracerApp::~ComplexRaytracerApp()
     {
         mDevice->GetDispatchTable().deviceWaitIdle();
-        mRtStage.Delete();
-        mSwapCopyStage.Delete();
-        mScene = nullptr;
     }
 }  // namespace complex_raytracer

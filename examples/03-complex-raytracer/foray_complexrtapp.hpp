@@ -1,4 +1,5 @@
 #pragma once
+#include <foray/stages/tonemapstage.hpp>
 #include <foray/api.hpp>
 #include <foray/scene/globalcomponents/lightmanager.hpp>
 
@@ -41,14 +42,16 @@ namespace complex_raytracer {
       public:
         inline explicit ComplexRaytracerApp(foray::base::AppLoopBase* apploop) : foray::base::DefaultAppBase(apploop) {}
         virtual ~ComplexRaytracerApp();
+
       protected:
         virtual void ApiInit() override;
 
         virtual void ApiRender(foray::base::FrameRenderInfo& renderInfo) override;
 
-        foray::Heap<ComplexRaytracingStage>               mRtStage;
-        foray::Heap<foray::stages::ImageToSwapchainStage> mSwapCopyStage;
-        foray::Heap<foray::scene::Scene>                  mScene;
+        foray::Heap<foray::scene::Scene>         mScene;
+        foray::Heap<ComplexRaytracingStage>      mRtStage;
+        foray::Heap<foray::stages::TonemapStage> mTonemap;
+        foray::Heap<foray::stages::ImguiStage>   mImgui;
     };
 
 }  // namespace complex_raytracer
